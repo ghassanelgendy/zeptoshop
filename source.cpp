@@ -1,10 +1,3 @@
-// Program: demo2.cpp
-// Purpose: Demonstrate use of bmplip for handling
-//          bmp colored and grayscale images
-//          Program load a gray image and store in another file
-// Author:  Mohammad El-Ramly
-// Date:    30 March 2018
-// Version: 1.0
 
 #include <iostream>
 #include <fstream>
@@ -17,12 +10,13 @@ unsigned char image[SIZE][SIZE];
 
 void loadImage ();
 void saveImage ();
-void doSomethingForImage ();
-
+void blackAndWhite ();
+void userChoice();
+void welcomeScreen();
 int main()
 {
   loadImage();
-  doSomethingForImage();
+  welcomeScreen();
   saveImage();
   return 0;
 }
@@ -54,20 +48,31 @@ void saveImage () {
 }
 
 //_________________________________________
-void doSomethingForImage() {
+void blackAndWhite() {
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j< SIZE; j++) {
-
-/* Example code to convert to BW the image
-   A better version should NOt use 127 but the
-   average of the pixels
-
-        if (image[i][j] > 127)
+        if (image[i][j] > 255/2)
             image[i][j] = 255;
         else
             image[i][j] = 0;
-*/
-// do something with the image
     }
   }
+}
+
+void welcomeScreen() {
+cout<<"\t\t\tWelcome to ZETOSHOP: The Who Needs 'Em Edition\n\t\t\t\tPlease choose what you wanna do \n"<<
+"1. Black and white filter\n";
+userChoice();
+
+
+}
+
+void userChoice() {
+    unsigned short choice;
+    cin>>choice;
+    switch (choice) {
+        case(1):
+            blackAndWhite();
+            break;
+    }
 }
