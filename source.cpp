@@ -13,6 +13,7 @@ void saveImage ();
 void blackAndWhite ();
 void userChoice();
 void welcomeScreen();
+void blur();
 int main()
 {
   loadImage();
@@ -75,4 +76,8 @@ void userChoice() {
             blackAndWhite();
             break;
     }
+}
+
+void blur(){
+
 }
