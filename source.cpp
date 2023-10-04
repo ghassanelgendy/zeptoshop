@@ -10,19 +10,19 @@ unsigned char image[SIZE][SIZE];
 int getAverage();
 void loadImage ();
 void saveImage ();
-void blackAndWhite ();
 void userChoice();
 void welcomeScreen();
 void blur();
+void blackAndWhite ();
+
 int main()
 {
-  loadImage();
-  welcomeScreen();
-  saveImage();
+    welcomeScreen();
+    loadImage();
+    saveImage();
   return 0;
 }
 
-//_________________________________________
 void loadImage () {
    char imageFileName[100];
 
@@ -33,9 +33,9 @@ void loadImage () {
    // Add to it .bmp extension and load image
    strcat (imageFileName, ".bmp");
    readGSBMP(imageFileName, image);
+   cout<<'\n';
 }
 
-//_________________________________________
 void saveImage () {
    char imageFileName[100];
 
@@ -48,11 +48,10 @@ void saveImage () {
    writeGSBMP(imageFileName, image);
 }
 
-//_________________________________________
 void blackAndWhite() {
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j< SIZE; j++) {
-        if (image[i][j] > 255/2)
+        if (image[i][j] > getAverage())
             image[i][j] = 255;
         else
             image[i][j] = 0;
@@ -61,9 +60,11 @@ void blackAndWhite() {
 }
 
 void welcomeScreen() {
-cout<<"\t\t\tWelcome to ZETOSHOP: The Who Needs 'Em Edition\n\t\t\t\tPlease choose what you wanna do \n"<<
-"1. Black and white filter\n"<<
-"2. Get Average";
+cout<<"\t\t\t\t<----- Welcome to ZETOSHOP: The Who Needs 'Em Edition ----->\n";
+loadImage();
+cout<<"\t\t\t\t\t<----- Please choose what you wanna do ----->\n"<<
+"-1. Black and white filter\n"<<
+"-2. Get average pixels (advanced)\n";
 userChoice();
 
 
@@ -87,11 +88,12 @@ void blur(){
 }
 
 int getAverage(){
-    int avg =0;
+    int avg = 0;
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             avg += (image[i][j]);
         }
     }
+
     return (avg/(SIZE*SIZE));
 }
