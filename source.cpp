@@ -13,7 +13,7 @@ int avg = 127;
 //function to generate average contrast for image
 void getAverage(int &average);
 //load image exists in same directory
-void loadImage ();
+void loadImage (unsigned char img[SIZE][SIZE]);
 //save image in same directory
 void saveImage ();
 //prompt takes choice from user
@@ -27,18 +27,19 @@ void blackAndWhite (int average);
 
 void merge();
 
+void flip();
 int continuePrompt();
 
 int main()
 {
     welcomeScreen();
-    loadImage();
+    loadImage(image);
     getAverage(avg);
     userChoice();
   return 0;
 }
 
-void loadImage () {
+void loadImage (unsigned char img[SIZE][SIZE]) {
 
     char imageFileName[100];
 
@@ -48,7 +49,7 @@ void loadImage () {
 
    // Add to it .bmp extension and load image
    strcat (imageFileName, ".bmp");
-   readGSBMP(imageFileName, image);
+   readGSBMP(imageFileName, img);
    cout<<'\n';
 }
 
@@ -100,7 +101,8 @@ void userChoice() {
         "-1. Black and white filter\n"<<
         "-2. Get average pixels (advanced)\n"<<
         "-3. Invert\n"<<
-        "-4. Save image to a file\n";
+        "-4. Merge\n"<<
+        "-5. Save image to a file\n";
     cin>>choice;
     switch (choice) {
         case(1):
@@ -113,10 +115,11 @@ void userChoice() {
             invert();
             break;
         case(4):
-            saveImage();
+            merge();
             break;
         case(5):
-            merge();
+            saveImage();
+            break;
     }
     continuePrompt();
 }
@@ -141,9 +144,16 @@ void blackAndWhite(int average) {
 }
 
 void merge() {
-loadImage();
+    cout<<"Load the second image, ";
+    unsigned char secImage[SIZE][SIZE];
+    loadImage(secImage);
     for (int i = 0; i < SIZE; ++i) {
-        
+        for (int j = 0; j < SIZE; ++j) {
+           image[i][j] = ( image[i][j] + secImage[i][j] ) / 2  ;
+        }
     }
+}
+void flip(){
+    cout<<"";
 }
 
