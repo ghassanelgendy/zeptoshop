@@ -70,14 +70,17 @@ cout<<"\t\t\t\t<----- Welcome to ZETOSHOP: The Who Needs 'Em Edition ----->\n";
 }
 
 int continuePrompt(){
-    cout<<"\t\t\t\t\t<----- Do you want to do anything else? ----->\n"<<
-        "Y to continue / N to exit\n";
+    cout<<"\t\t\t\t\t<----- Do you want to save or do smth else? ----->\n"<<
+        "S to save / D to do smth else\n";
     char c;
     cin>>c;
-    if (c == 'y' || c == 'Y')
+    if (c == 'd' || c == 'D')
         userChoice();
+    else if (c == 's' || c == 'S')
+        saveImage();
     else
-        return 0;
+        cout<<"Hanhazar?";
+    return 0;
 }
 
 void getAverage(int &average){
@@ -115,6 +118,7 @@ void userChoice() {
         case(5):
             merge();
     }
+    continuePrompt();
 }
 
 void invert(){
