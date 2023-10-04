@@ -31,11 +31,12 @@ void flip();
 
 int continuePrompt();
 
+void rotate();
+
 int main()
 {
     welcomeScreen();
     loadImage(image);
-    getAverage(avg);
     userChoice();
   return 0;
 }
@@ -97,35 +98,38 @@ void getAverage(int &average){
 }
 
 void userChoice() {
-    unsigned short choice;
+    unsigned char choice;
     cout<<"\t\t\t\t\t<----- Please choose what you wanna do ----->\n"<<
         "-1. Black and white filter\n"<<
         "-2. Get average pixels (advanced)\n"<<
         "-3. Invert\n"<<
         "-4. Merge\n"<<
         "-5. Flip\n"<<
-        "-6. Save image to a file\n";
+        "-6. Rotate\n"<<
+        "-7. Save image to a file\n";
     cin>>choice;
     switch (choice) {
-        case(1):
+        case('1'):
             blackAndWhite(avg);
             break;
-        case(2):
+        case('2'):
            cout<< avg;
             break;
-        case(3):
+        case('3'):
             invert();
             break;
-        case(4):
+        case('4'):
             merge();
             break;
-        case(5):
+        case('5'):
            flip();
            break;
-        case(6):
+        case('6'):
+            rotate();
+            break;
+        case('g'):
             saveImage();
             break;
-
     }
     continuePrompt();
 }
@@ -184,3 +188,23 @@ void flip(){
             image[i][j] = flipped[i][j];
     }
 }
+
+void rotate(){
+    cout<<"Enter degree of rotation\n"<<
+    "90, 180, 270, 360";
+    unsigned char rotated[SIZE][SIZE];
+    int x;
+    cin>>x;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j <SIZE; ++j) {
+            rotated[i][j] = image[j][i];
+        }
+    }
+    flip();
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j)
+            image[i][j] = rotated[i][j];
+    }
+    saveImage();
+}
+
