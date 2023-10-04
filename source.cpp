@@ -7,7 +7,7 @@
 
 using namespace std;
 unsigned char image[SIZE][SIZE];
-
+int getAverage();
 void loadImage ();
 void saveImage ();
 void blackAndWhite ();
@@ -62,7 +62,8 @@ void blackAndWhite() {
 
 void welcomeScreen() {
 cout<<"\t\t\tWelcome to ZETOSHOP: The Who Needs 'Em Edition\n\t\t\t\tPlease choose what you wanna do \n"<<
-"1. Black and white filter\n";
+"1. Black and white filter\n"<<
+"2. Get Average";
 userChoice();
 
 
@@ -75,9 +76,22 @@ void userChoice() {
         case(1):
             blackAndWhite();
             break;
+        case(2):
+           cout<< getAverage();
+            break;
     }
 }
 
 void blur(){
 
+}
+
+int getAverage(){
+    int avg =0;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            avg += (image[i][j]);
+        }
+    }
+    return (avg/(SIZE*SIZE));
 }
