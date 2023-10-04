@@ -28,6 +28,7 @@ void blackAndWhite (int average);
 void merge();
 
 void flip();
+
 int continuePrompt();
 
 int main()
@@ -102,7 +103,8 @@ void userChoice() {
         "-2. Get average pixels (advanced)\n"<<
         "-3. Invert\n"<<
         "-4. Merge\n"<<
-        "-5. Save image to a file\n";
+        "-5. Flip\n"<<
+        "-6. Save image to a file\n";
     cin>>choice;
     switch (choice) {
         case(1):
@@ -118,8 +120,12 @@ void userChoice() {
             merge();
             break;
         case(5):
+           flip();
+           break;
+        case(6):
             saveImage();
             break;
+
     }
     continuePrompt();
 }
@@ -153,7 +159,28 @@ void merge() {
         }
     }
 }
-void flip(){
-    cout<<"";
-}
 
+void flip(){
+    cout<<"V to flip vertically, H to flip horizontally\n";
+    unsigned char flipped[SIZE][SIZE];
+    char x;
+    cin>>x;
+    if (x == 'v' || x == 'V'){
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                flipped[i][j] = image[SIZE - 1 - i][j];
+            }
+        }
+    }
+    else{
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                flipped[i][j] = image[i][SIZE - 1 - j];
+            }
+        }
+    }
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j)
+            image[i][j] = flipped[i][j];
+    }
+}
