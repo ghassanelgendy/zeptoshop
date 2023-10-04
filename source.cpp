@@ -8,6 +8,9 @@
 using namespace std;
 //declaring the matrix
 unsigned char image[SIZE][SIZE];
+
+unsigned char rotated[SIZE][SIZE];
+
 //initializing the average contrast for each pixel
 int avg = 127;
 //function to generate average contrast for image
@@ -32,6 +35,8 @@ void flip();
 int continuePrompt();
 
 void rotate();
+
+void oneTimeRotate(short times);
 
 int main()
 {
@@ -188,23 +193,37 @@ void flip(){
             image[i][j] = flipped[i][j];
     }
 }
-
-void rotate(){
-    cout<<"Enter degree of rotation\n"<<
-    "90, 180, 270, 360";
-    unsigned char rotated[SIZE][SIZE];
-    int x;
-    cin>>x;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j <SIZE; ++j) {
-            rotated[i][j] = image[j][i];
+void oneTimeRotate(short time) {
+    for (int k = 0; k < time; ++k) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                rotated[i][j] = image[j][SIZE - 1 - i];
+            }
+        }
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j)
+                image[i][j] = rotated[i][j];
         }
     }
-    flip();
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j)
-            image[i][j] = rotated[i][j];
-    }
-    saveImage();
 }
+
+    void rotate() {
+        cout << "Enter degree of rotation\n" <<
+             "90, 180, 270, 360\n";
+        int x;
+        cin >> x;
+        switch (x) {
+            case (90):
+                oneTimeRotate(1);
+                break;
+            case (180):
+                oneTimeRotate(2);
+                break;
+            case (270):
+                oneTimeRotate(3);
+                break;
+            default:
+                cout << "?";
+        }
+    }
 
