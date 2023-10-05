@@ -50,6 +50,8 @@ void burnEffect(unsigned char newImg[SIZE][SIZE]);
 
 void detectEdges();
 
+void enlarge();
+
 int main()
 {
     issue = 0;
@@ -135,6 +137,7 @@ void userChoice() {
          "-7. Change brightness\n" <<
          "-8. Detect edges\n"<<
          "-9. Add smart frame\n"<<
+         "-C. Enlarge\n"<<
          "-S. Save image to a file\n";
         cin>>choice;
         tolower(choice);
@@ -174,6 +177,11 @@ void userChoice() {
                 break;
             case ('b'):
                 cout << "b Under construction\n";
+            case('c'):
+                enlarge();
+                break;
+            case('d'):
+                break;
             case ('s'):
                 saveImage();
                 break;
@@ -311,5 +319,73 @@ void addFrame(){
                 image[i][j]=clr;
             }
         }
+    }
+}
+
+void enlarge() {
+    int x;
+    unsigned char enlarged[SIZE][SIZE];
+    cout << "which quarter do u want to enlarge?";
+    cin >> x;
+    switch (x) {
+        case (1):
+            for (int i = 0; i < 128; ++i) {
+                for (int j = 0; j < 128; ++j) {
+                    for (int k = 0; k < 2; ++k) {
+                        for (int l = 0; l < 2; ++l) {
+                            enlarged[i*2 + k][j*2 + l] = image[i][j];
+                        }
+                    }
+
+
+                }
+            }
+            break;
+
+
+        case (2):
+            for (int i = 128; i < 255; ++i) {
+                for (int j = 0; j < 128; ++j) {
+                    for (int k = 0; k < 2; ++k) {
+                        for (int l = 0; l < 2; ++l) {
+                            enlarged[i*2 + k][(j-128)*2 + l] = image[i][j];
+                        }
+                    }
+
+
+                }
+            }
+            break;
+        case (3):
+            for (int i = 0; i < 128; ++i) {
+                for (int j = 128; j < 255; ++j) {
+                    for (int k = 0; k < 2; ++k) {
+                        for (int l = 0; l < 2; ++l) {
+                            enlarged[i*2 + k][j*2 + l] = image[i][j];
+                        }
+                    }
+
+                }
+            }
+            break;
+
+        case (4):
+            for (int i = 128; i < 255; ++i) {
+                for (int j = 128; j < 255; ++j) {
+                    for (int k = 0; k < 2; ++k) {
+                        for (int l = 0; l < 2; ++l) {
+                            enlarged[i*2 + k][j*2 + l] = image[i][j];
+                        }
+                    }
+                }
+            }
+            break;
+        default:
+            break;
+    }
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j)
+            image[i][j] = enlarged[i][j];
+
     }
 }
