@@ -6,6 +6,8 @@
 using namespace std;
 //declaring the matrix
 unsigned char image[SIZE][SIZE];
+//boolean to catch logical errors
+bool issue = false;
 //declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
 //initializing the average contrast for each pixel
@@ -24,6 +26,8 @@ void welcomeScreen();
 void invert();
 //"black and white" filter
 void blackAndWhite (int& average);
+
+void addFrame();
 
 void merge();
 
@@ -47,9 +51,17 @@ void detectEdges();
 
 int main()
 {
+    issue = 0;
     welcomeScreen();
     loadImage(image);
-    userChoice();
+    if (!issue) {
+        getAverage(avg);
+        userChoice();
+    }
+    else{
+        cout<<"\t\t\t\t-----> An unexpected error happened please try again! <-----\n";
+        main();
+    }
   return 0;
 }
 
@@ -63,7 +75,7 @@ void loadImage (unsigned char img[SIZE][SIZE]) {
 
    // Add to it .bmp extension and load image
    strcat (imageFileName, ".bmp");
-   readGSBMP(imageFileName, img);
+    (readGSBMP(imageFileName, img))? issue =1: readGSBMP(imageFileName,img);
    cout<<'\n';
 }
 
@@ -77,6 +89,7 @@ void saveImage () {
    // Add to it .bmp extension and load image
    strcat (imageFileName, ".bmp");
    writeGSBMP(imageFileName, image);
+   cout<<'\n';
 }
 
 void welcomeScreen() {
@@ -86,7 +99,7 @@ cout<<"\t\t\t\t<----- Welcome to ZETOSHOP: The Who Needs 'Em Edition ----->\n";
 
 int continuePrompt(){
     cout<<"\t\t\t\t\t<----- Do you want to save or do something else? ----->\n"<<
-        "(S) to save / (D) to do something else\n";
+        "(S) to save, (D) to do something else\n";
     char c;
     cin>>c;
     if (c == 'd' || c == 'D')
@@ -106,66 +119,68 @@ void getAverage(int &average){
         }
     }
     average = (sum/(SIZE*SIZE));
-    cout<<"Average contrast: "<<average<<"\n";
+    cout<<"\t\t\t\t<----- FOR DEBUGGING I'M IN LINE (118) - Average contrast: <-----"<<average<<"\n";
 }
 
 void userChoice() {
     unsigned char choice;
-    cout<<"\t\t\t\t\t<----- Please choose what you wanna do ----->\n"<<
-        "-1. Black and white filter\n"<<
-        "-2. Get average pixels (advanced)\n"<<
-        "-3. Invert\n"  <<
-        "-4. Merge\n"   <<
-        "-5. Flip\n"    <<
-        "-6. Rotate\n"  <<
-        "-7. Change brightness\n"  <<
-        "-g. Save image to a file\n";
-    cin>>choice;
-
-    switch (choice) {
-        case('1'):
-            getAverage(avg);
-            blackAndWhite(avg);
-            break;
-        case('2'):
-           cout<< avg;
-            break;
-        case('3'):
-            invert();
-            break;
-        case('4'):
-            merge();
-            break;
-        case('5'):
-           flip();
-           break;
-        case('6'):
-            rotationPrompt();
-            break;
-        case('7'):
-            cout<<"Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
-            unsigned char c;
-            cin>>c;
-            controlBrightness(c);
-            break;
-        case('8'):
-            cout<<"8 Under construction\n";
-            break;
-        case('9'):
-            cout<<"9 Under construction\n";
-            break;
-        case('a'):
-            cout<<"a Under construction\n";
-            break;
-        case('b'):
-            cout<<"b Under construction\n";
-        case('c'):
-            cout<<"c Under construction\n";
-            break;
-        default:
-            saveImage();
-            break;
-    }
+    cout << "\t\t\t\t\t<----- Please choose what you wanna do ----->\n" <<
+         "-1. Black and white filter\n" <<
+         "-2. Get average pixels contrast (advanced)\n" <<
+         "-3. Invert\n" <<
+         "-4. Merge\n" <<
+         "-5. Flip\n" <<
+         "-6. Rotate\n" <<
+         "-7. Change brightness\n" <<
+         "-8. Detect edges\n"<<
+         "-9. Add smart frame\n"<<
+         "-S. Save image to a file\n";
+        cin>>choice;
+        tolower(choice);
+        switch (choice) {
+            case ('1'):
+                blackAndWhite(avg);
+                break;
+            case ('2'):
+                cout <<"Average pixels contrast = "<<avg<<'\n';
+                break;
+            case ('3'):
+                invert();
+                break;
+            case ('4'):
+                merge();
+                break;
+            case ('5'):
+                flip();
+                break;
+            case ('6'):
+                rotationPrompt();
+                break;
+            case ('7'):
+                cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
+                unsigned char c;
+                cin >> c;
+                controlBrightness(c);
+                break;
+            case ('8'):
+                detectEdges();
+                break;
+            case ('9'):
+                addFrame();
+                break;
+            case ('a'):
+                cout << "a Under construction\n";
+                break;
+            case ('b'):
+                cout << "b Under construction\n";
+            case ('s'):
+                saveImage();
+                break;
+            default:
+                cout << "Wrong entry<<\n";
+                userChoice();
+                break;
+        }
     continuePrompt();
 }
 
@@ -197,7 +212,7 @@ void merge() {
 }
 
 void flip(){
-    cout<<"V to flip vertically, H to flip horizontally\n";
+    cout<<"(V) to flip vertically, (H) to flip horizontally\n";
     unsigned char flipped[SIZE][SIZE];
     char x;
     cin>>x;
@@ -237,7 +252,7 @@ void rotate(short time) {
 }
 
 void rotationPrompt() {
-    cout << "Enter degree of rotation: \n" <<
+    cout << "Enter degrees of rotation: \n" <<
          "90, 180, 270, 360\n";
     int x;
     cin >> x;
@@ -277,5 +292,23 @@ void brighten() {
 }
 
 void detectEdges() {
+    for (int i = 3; i < SIZE-3; ++i) {
+        for (int j = 3; j < SIZE - 3; ++j) {
+            if (image[i + 1][j] < image[i][j])
+                image[i][j] = 0;
+            else image[i][j]= 255;
+        }
+    }
+}
 
+void addFrame(){
+    unsigned short clr = 255;
+    if (avg > 128) clr = 0;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            if (i <= 5 || j <=5 || i > 250 || j >250){
+                image[i][j]=clr;
+            }
+        }
+    }
 }
