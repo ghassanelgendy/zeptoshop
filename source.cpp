@@ -320,12 +320,21 @@ void brighten() {
 }
 
 void detectEdges() {
-    for (int i = 1; i < SIZE - 1; ++i) {
-        for (int j = 1; j < SIZE - 1; ++j) {
-            if (image[i + 1][j + 1] < image[i][j])
-                image[i][j] = 0;
-            else image[i][j] = 255;
+    unsigned char detected[SIZE][SIZE];
+    for (int i = 1; i < SIZE-1; ++i) {
+        for (int j = 1; j < SIZE-1; ++j) {
+            if (image[i+1][j] == 0  &&
+                image[i-1][j] == 255 ||
+
+                image[i][j+1] == 0 &&
+                image[i][j-1] ==255){
+                detected[i][j] = 0;
+            }
+            else{
+                detected[i][j] = 255;
+            }
         }
+        burnEffect(detected);
     }
 }
 
@@ -402,4 +411,13 @@ void enlarge() {
     burnEffect(enlarged);
 }
 
+/*
 
+for (int i = 1; i < SIZE - 1; ++i) {
+for (int j = 1; j < SIZE - 1; ++j) {
+if (image[i + 1][j + 1] < image[i][j])
+image[i][j] = 0;
+else
+image[i][j] = 255;
+}
+}*/
