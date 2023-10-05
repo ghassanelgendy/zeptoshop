@@ -109,13 +109,13 @@ void userChoice() {
     cout<<"\t\t\t\t\t<----- Please choose what you wanna do ----->\n"<<
         "-1. Black and white filter\n"<<
         "-2. Get average pixels (advanced)\n"<<
-        "-3. Invert\n"<<
-        "-4. Merge\n"<<
-        "-5. Flip\n"<<
-        "-6. Rotate\n"<<
-        "-7. Darken\n"<<
+        "-3. Invert\n"  <<
+        "-4. Merge\n"   <<
+        "-5. Flip\n"    <<
+        "-6. Rotate\n"  <<
+        "-7. Darken\n"  <<
         "-8. Brighten\n"<<
-        "-9. Shrink\n"<<
+        "-9. Shrink\n"  <<
         "-g. Save image to a file\n";
     cin>>choice;
     switch (choice) {
