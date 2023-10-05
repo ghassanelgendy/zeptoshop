@@ -1,7 +1,7 @@
 //Image Processor Project by:
-//Ghassan Elgendy 20220239
-//Rowan Ammar     20220133
-//Jana Mohamed    20220470
+//Ghassan Elgendy 20220239     E-Mail: Ghassanelgendyy@gmail.com
+//Rowan Ammar     20220133     E-Mail: rawanehab523@gmail.com
+//Jana Mohamed    20220470     E-Mail: janamohamedramadan335@gmail.com
 //3/10/2023//
 #include <iostream>
 #include <cstring>
@@ -13,7 +13,7 @@ using namespace std;
 unsigned char image[SIZE][SIZE];
 
 //boolean to catch logical errors
-bool issue = false;
+bool isIssue = false;
 
 //declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
@@ -31,7 +31,7 @@ void loadImage(unsigned char img[SIZE][SIZE]);
 void saveImage();
 
 //prompt takes choice from user
-void userChoice();
+int userChoice();
 
 //start point of the project
 void welcomeScreen();
@@ -84,10 +84,10 @@ void shrink();
 void mirror();
 
 int main() {
-    issue = false;
+    isIssue = false;
     welcomeScreen();
     loadImage(image);
-    if (!issue) {
+    if (!isIssue) {
         getAverage(avg);
         userChoice();
     } else {
@@ -107,7 +107,7 @@ void loadImage(unsigned char img[SIZE][SIZE]) {
 
     // Add to it .bmp extension and load image
     strcat(imageFileName, ".bmp");
-    (readGSBMP(imageFileName, img)) ? issue = true : readGSBMP(imageFileName, img);
+    (readGSBMP(imageFileName, img)) ? isIssue = true : readGSBMP(imageFileName, img);
     cout << '\n';
 }
 
@@ -128,7 +128,6 @@ void saveImage() {
 void welcomeScreen() {
 
     cout << "\t\t\t\t<----- Welcome to ZETOSHOP: The Who Needs 'Em Edition ----->\n";
-
 }
 
 int continuePrompt() {
@@ -139,42 +138,50 @@ int continuePrompt() {
     cin >> c;
     if (c == 'd' || c == 'D')
         userChoice();
-    else if (c == 's' || c == 'S')
+    else if (c == 's' || c == 'S') {
         saveImage();
-    else
-        cout << "Hanhazar?";
+        cout << "Do you have another image to process? Y/N\n";
+        unsigned char loop;
+        cin >> loop;
+        if (loop == 'y' || loop == 'Y') {
+            main();
+        } else {
+            cout << "Bye.\n";
+        }
+    }
     return 0;
 }
 
 void getAverage(int &average) {
 
     int sum = 0;
-    for (auto & i : image) {
-        for (unsigned char & j : i) {
+    for (auto &i: image) {
+        for (unsigned char &j: i) {
             sum += j;
         }
     }
     average = (sum / (SIZE * SIZE));
-    cout << "\t\t\t\t<----- FOR DEBUGGING I'M IN LINE (118) - Average contrast: <-----" << average << "\n";
+    // cout << "\t\t\t\t<----- FOR DEBUGGING I'M IN LINE (118) - Average contrast: <-----" << average << "\n";
 }
 
-void userChoice() {
+int userChoice() {
 
     unsigned char choice;
     cout << "\t\t\t\t\t<----- Please choose what you wanna do ----->\n" <<
-         "-1. Black and white filter\n" <<
-         "-2. Get average pixels contrast (advanced)\n" <<
-         "-3. Invert\n" <<
-         "-4. Merge\n" <<
-         "-5. Flip\n" <<
-         "-6. Rotate\n" <<
-         "-7. Change brightness\n" <<
-         "-8. Detect edges\n" <<
-         "-9. Add smart frame\n" <<
-         "-A. Shrink\n" <<
-         "-B. Mirror\n"<<
-         "-C. Enlarge\n" <<
-         "-S. Save image to a file\n";
+         "- 1. Black and white filter\n" <<
+         "- 2. Invert filter\n" <<
+         "- 3. Merge\n" <<
+         "- 4. Flip\n" <<
+         "- 5. Change brightness\n" <<
+         "- 6. Rotate\n" <<
+         "- 7. Detect edges\n" <<
+         "- 8. Enlarge\n" <<
+         "- 9. Shrink\n" <<
+         "- A. Mirror\n" <<
+         "- B. Add smart frame\n" <<
+         "- C. Get average pixels contrast (advanced)\n" <<
+         "- S. Save image to a file\n" <<
+         "- 0. Exit :(\n";
     cin >> choice;
     choice = tolower(choice);
     switch (choice) {
@@ -182,49 +189,54 @@ void userChoice() {
             blackAndWhite(avg);
             break;
         case ('2'):
-            cout << "Average pixels contrast = " << avg << '\n';
-            break;
-        case ('3'):
             invert();
             break;
-        case ('4'):
+        case ('3'):
             merge();
             break;
-        case ('5'):
+        case ('4'):
             flip();
             break;
-        case ('6'):
-            rotationPrompt();
-            break;
-        case ('7'):
+        case ('5'):
             cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
             unsigned char c;
             cin >> c;
             controlBrightness(c);
             break;
-        case ('8'):
+        case ('6'):
+            rotationPrompt();
+            break;
+        case ('7'):
             detectEdges();
             break;
-        case ('9'):
-            addFrame();
+        case ('8'):
+            enlarge();
             break;
-        case ('a'):
+        case ('9'):
             shrink();
             break;
-        case ('b'):
+        case ('a'):
             mirror();
             break;
+        case ('b'):
+            addFrame();
+            break;
         case ('c'):
-            enlarge();
+            cout << "Average pixels contrast = " << avg << '\n';
             break;
         case ('d'):
             break;
         case ('s'):
             saveImage();
             break;
+        case ('0'):
+            cout << "Bye.\n";
+            return 0;
+            break;
         default:
             cout << "Wrong entry<<\n";
             userChoice();
+
             break;
     }
     continuePrompt();
@@ -232,16 +244,16 @@ void userChoice() {
 
 void invert() {
 
-    for (auto & i : image) {
-        for (unsigned char & j : i) {
+    for (auto &i: image) {
+        for (unsigned char &j: i) {
             j = 255 - j;
         }
     }
 }
 
 void blackAndWhite(int &average) {
-    for (auto & i : image) {
-        for (unsigned char & j : i) {
+    for (auto &i: image) {
+        for (unsigned char &j: i) {
             (j > average) ? j = 255 : j = 0;
         }
     }
@@ -322,16 +334,16 @@ void controlBrightness(unsigned char c) {
 }
 
 void darken() {
-    for (auto & i : image) {
-        for (unsigned char & j : i) {
+    for (auto &i: image) {
+        for (unsigned char &j: i) {
             j /= 2;
         }
     }
 }
 
 void brighten() {
-    for (auto & i : image) {
-        for (unsigned char & j : i) {
+    for (auto &i: image) {
+        for (unsigned char &j: i) {
             j = (j + 255) / 2;
         }
     }
@@ -439,11 +451,10 @@ void shrink() {
     cout << "At what scale?\n" <<
          "1. 1/2\n2. 1/3\n3. 1/4\n";
     cin >> scale;
-    if (scale > 3){
-        cout<<"Please i'm not a magician, choose a valid number.\n";
+    if (scale > 3) {
+        cout << "Please i'm not a magician, choose a valid number.\n";
         shrink();
-    }
-    else {
+    } else {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 shrunk[i][j] = 255;
@@ -454,41 +465,41 @@ void shrink() {
     }
 }
 
-void mirror(){
-    cout<<"1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
+void mirror() {
+    cout << "1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
     unsigned short option;
-    cin>>option;
+    cin >> option;
     switch (option) {
-        case(1):
+        case (1):
             for (int i = 0; i < SIZE; ++i) {
-                for (int j = 0; j < SIZE/2; ++j) {
+                for (int j = 0; j < SIZE / 2; ++j) {
                     image[i][j + 128] = image[i][127 - j];
                 }
             }
             break;
-        case(2):
+        case (2):
             for (int i = 0; i < SIZE; ++i) {
-                for (int j = 0; j < SIZE/2; ++j) {
-                     image[i][127 - j] = image[i][j + 128];
+                for (int j = 0; j < SIZE / 2; ++j) {
+                    image[i][127 - j] = image[i][j + 128];
                 }
             }
             break;
-        case(3):
-            for (int i = 0; i < SIZE/2; ++i) {
+        case (3):
+            for (int i = 0; i < SIZE / 2; ++i) {
                 for (int j = 0; j < SIZE; ++j) {
-                    image[i+ 128][j] = image[127 - i][j];
+                    image[i + 128][j] = image[127 - i][j];
                 }
             }
             break;
-        case(4):
-            for (int i = 0; i < SIZE/2; ++i) {
+        case (4):
+            for (int i = 0; i < SIZE / 2; ++i) {
                 for (int j = 0; j < SIZE; ++j) {
-                    image[127 - i][j] = image[i+ 128][j];
+                    image[127 - i][j] = image[i + 128][j];
                 }
             }
             break;
         default:
-            cout<<"How??\n";
+            cout << "How??\n";
             break;
     }
 }
