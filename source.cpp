@@ -1,4 +1,8 @@
-//Image Processor Project
+//Image Processor Project by:
+//Ghassan Elgendy 20220239
+//Rowan Ammar     20220133
+//Jana Mohamed    20220470
+//3/10/2023//
 #include <iostream>
 #include <cstring>
 #include "bmplib.cpp"
@@ -71,11 +75,16 @@ void burnEffect(unsigned char newImg[SIZE][SIZE]);
 //detect edges of an object
 void detectEdges();
 
-//enlarge chosen quarter by scale 2x
+//enlarge chosen quarter by scale 4x
 void enlarge();
 
+//shrink image by a desired scale
+void shrink();
+
+void mirror();
+
 int main() {
-    issue = 0;
+    issue = false;
     welcomeScreen();
     loadImage(image);
     if (!issue) {
@@ -98,11 +107,12 @@ void loadImage(unsigned char img[SIZE][SIZE]) {
 
     // Add to it .bmp extension and load image
     strcat(imageFileName, ".bmp");
-    (readGSBMP(imageFileName, img)) ? issue = 1 : readGSBMP(imageFileName, img);
+    (readGSBMP(imageFileName, img)) ? issue = true : readGSBMP(imageFileName, img);
     cout << '\n';
 }
 
 void saveImage() {
+
     char imageFileName[100];
 
     // Get gray scale image target file name
@@ -116,11 +126,13 @@ void saveImage() {
 }
 
 void welcomeScreen() {
+
     cout << "\t\t\t\t<----- Welcome to ZETOSHOP: The Who Needs 'Em Edition ----->\n";
 
 }
 
 int continuePrompt() {
+
     cout << "\t\t\t\t\t<----- Do you want to save or do something else? ----->\n" <<
          "(S) to save, (D) to do something else\n";
     char c;
@@ -135,10 +147,11 @@ int continuePrompt() {
 }
 
 void getAverage(int &average) {
+
     int sum = 0;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            sum += (image[i][j]);
+    for (auto & i : image) {
+        for (unsigned char & j : i) {
+            sum += j;
         }
     }
     average = (sum / (SIZE * SIZE));
@@ -146,6 +159,7 @@ void getAverage(int &average) {
 }
 
 void userChoice() {
+
     unsigned char choice;
     cout << "\t\t\t\t\t<----- Please choose what you wanna do ----->\n" <<
          "-1. Black and white filter\n" <<
@@ -157,6 +171,7 @@ void userChoice() {
          "-7. Change brightness\n" <<
          "-8. Detect edges\n" <<
          "-9. Add smart frame\n" <<
+         "-A. Shrink\n" <<
          "-C. Enlarge\n" <<
          "-S. Save image to a file\n";
     cin >> choice;
@@ -193,7 +208,7 @@ void userChoice() {
             addFrame();
             break;
         case ('a'):
-            cout << "a Under construction\n";
+            shrink();
             break;
         case ('b'):
             cout << "b Under construction\n";
@@ -214,17 +229,18 @@ void userChoice() {
 }
 
 void invert() {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            image[i][j] = 255 - image[i][j];
+
+    for (auto & i : image) {
+        for (unsigned char & j : i) {
+            j = 255 - j;
         }
     }
 }
 
 void blackAndWhite(int &average) {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            (image[i][j] > average) ? image[i][j] = 255 : image[i][j] = 0;
+    for (auto & i : image) {
+        for (unsigned char & j : i) {
+            (j > average) ? j = 255 : j = 0;
         }
     }
 }
@@ -281,7 +297,7 @@ void rotate(short time) {
 
 void rotationPrompt() {
     cout << "Enter degrees of rotation: \n" <<
-    "90, 180, 270, 360\n";
+         "90, 180, 270, 360\n";
     int x;
     cin >> x;
     switch (x) {
@@ -304,39 +320,36 @@ void controlBrightness(unsigned char c) {
 }
 
 void darken() {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            image[i][j] /= 2;
+    for (auto & i : image) {
+        for (unsigned char & j : i) {
+            j /= 2;
         }
     }
 }
 
 void brighten() {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            image[i][j] = (image[i][j] + 255) / 2;
+    for (auto & i : image) {
+        for (unsigned char & j : i) {
+            j = (j + 255) / 2;
         }
     }
 }
 
 void detectEdges() {
-    for (int i = 0; i < SIZE; i++){
-        for (int j = 0; j < SIZE; j++){
-            if(image[i][j] >= avg){
-                if(image[i + 1][j] < avg
-                   || image[i][j + 1] < avg){
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (image[i][j] >= avg) {
+                if (image[i + 1][j] < avg
+                    || image[i][j + 1] < avg) {
                     image[i][j] = 0;
-                }
-                else{
+                } else {
                     image[i][j] = 255;
                 }
-            }
-            else{
-                if(image[i + 1][j] >= avg
-                   || image[i][j + 1] >= avg){
+            } else {
+                if (image[i + 1][j] >= avg
+                    || image[i][j + 1] >= avg) {
                     image[i][j] = 0;
-                }
-                else{
+                } else {
                     image[i][j] = 255;
                 }
             }
@@ -357,7 +370,7 @@ void addFrame() {
 }
 
 void enlarge() {
-    int x;
+    unsigned short x;
     unsigned char enlarged[SIZE][SIZE];
 
     cout << "Which quarter do you want to enlarge?\n";
@@ -375,7 +388,7 @@ void enlarge() {
                 }
             }
             break;
-        //second quad
+            //second quad
         case (2):
             for (int i = 0; i < 128; ++i) {
                 for (int j = 128; j < SIZE; ++j) {
@@ -387,7 +400,7 @@ void enlarge() {
                 }
             }
             break;
-        //second quad
+            //third quad
         case (3):
             for (int i = 128; i < SIZE; ++i) {
                 for (int j = 0; j < 128; ++j) {
@@ -399,7 +412,7 @@ void enlarge() {
                 }
             }
             break;
-        //second quad
+            //fourth quad
         case (4):
             for (int i = 128; i < SIZE; ++i) {
                 for (int j = 128; j < SIZE; ++j) {
@@ -417,3 +430,33 @@ void enlarge() {
     burnEffect(enlarged);
 }
 
+void shrink() {
+    unsigned short scale;
+    //declaring new image after apply
+    unsigned char shrunk[SIZE][SIZE];
+    cout << "At what scale?\n" <<
+         "1. 1/2\n2. 1/3\n3. 1/4\n";
+    cin >> scale;
+    if (scale > 3){
+        cout<<"Please i'm not a magician, choose a valid number.\n";
+        shrink();
+    }
+    else {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                shrunk[i][j] = 255;
+                shrunk[i / (scale + 1)][j / (scale + 1)] = image[i][j];
+            }
+        }
+        burnEffect(shrunk);
+    }
+}
+
+void mirror(){
+unsigned char mirrored[SIZE][SIZE];
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+
+        }
+    }
+}
