@@ -5,6 +5,7 @@
 #include <cmath>
 #include "bmplib.cpp"
 
+int e = 0;
 using namespace std;
 //declaring the matrix
 unsigned char image[SIZE][SIZE];
