@@ -293,9 +293,9 @@ void brighten() {
 }
 
 void detectEdges() {
-    for (int i = 3; i < SIZE-3; ++i) {
-        for (int j = 3; j < SIZE - 3; ++j) {
-            if (image[i + 1][j] < image[i][j])
+    for (int i = 1; i < SIZE - 1; ++i) {
+        for (int j = 1; j < SIZE - 1; ++j) {
+            if (image[i + 1][j + 1] < image[i][j])
                 image[i][j] = 0;
             else image[i][j]= 255;
         }
