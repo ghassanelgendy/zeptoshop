@@ -1,16 +1,13 @@
 //Image Processor Project
 #include <iostream>
-#include <fstream>
 #include <cstring>
-#include <cmath>
 #include "bmplib.cpp"
 
 using namespace std;
 //declaring the matrix
 unsigned char image[SIZE][SIZE];
-
+//declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
-
 //initializing the average contrast for each pixel
 int avg = 127;
 //function to generate average contrast for image
@@ -26,7 +23,7 @@ void welcomeScreen();
 //"invert" filter
 void invert();
 //"black and white" filter
-void blackAndWhite (int average);
+void blackAndWhite (int& average);
 
 void merge();
 
@@ -34,11 +31,19 @@ void flip();
 
 int continuePrompt();
 
-void rotate();
+void rotationPrompt();
 
-void oneTimeRotate(short times);
+void rotate(short times);
 
 void darken();
+
+void brighten();
+
+void controlBrightness(unsigned char c);
+
+void burnEffect(unsigned char newImg[SIZE][SIZE]);
+
+void detectEdges();
 
 int main()
 {
@@ -80,8 +85,8 @@ cout<<"\t\t\t\t<----- Welcome to ZETOSHOP: The Who Needs 'Em Edition ----->\n";
 }
 
 int continuePrompt(){
-    cout<<"\t\t\t\t\t<----- Do you want to save or do smth else? ----->\n"<<
-        "S to save / D to do smth else\n";
+    cout<<"\t\t\t\t\t<----- Do you want to save or do something else? ----->\n"<<
+        "(S) to save / (D) to do something else\n";
     char c;
     cin>>c;
     if (c == 'd' || c == 'D')
@@ -113,13 +118,13 @@ void userChoice() {
         "-4. Merge\n"   <<
         "-5. Flip\n"    <<
         "-6. Rotate\n"  <<
-        "-7. Darken\n"  <<
-        "-8. Brighten\n"<<
-        "-9. Shrink\n"  <<
+        "-7. Change brightness\n"  <<
         "-g. Save image to a file\n";
     cin>>choice;
+
     switch (choice) {
         case('1'):
+            getAverage(avg);
             blackAndWhite(avg);
             break;
         case('2'):
@@ -135,12 +140,29 @@ void userChoice() {
            flip();
            break;
         case('6'):
-            rotate();
+            rotationPrompt();
             break;
         case('7'):
-            darken();
+            cout<<"Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
+            unsigned char c;
+            cin>>c;
+            controlBrightness(c);
             break;
-        case('g'):
+        case('8'):
+            cout<<"8 Under construction\n";
+            break;
+        case('9'):
+            cout<<"9 Under construction\n";
+            break;
+        case('a'):
+            cout<<"a Under construction\n";
+            break;
+        case('b'):
+            cout<<"b Under construction\n";
+        case('c'):
+            cout<<"c Under construction\n";
+            break;
+        default:
             saveImage();
             break;
     }
@@ -155,13 +177,10 @@ void invert(){
     }
 }
 
-void blackAndWhite(int average) {
+void blackAndWhite(int& average) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j< SIZE; j++) {
-            if (image[i][j] > average)
-                image[i][j] = 255;
-            else
-                image[i][j] = 0;
+            (image[i][j] > average)? image[i][j] = 255 : image[i][j] = 0;
         }
     }
 }
@@ -196,50 +215,67 @@ void flip(){
             }
         }
     }
+    burnEffect(flipped);
+}
+//Applies the effect to the global image[SIZE][SIZE] matrix
+void burnEffect(unsigned char newImg[SIZE][SIZE]){
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j)
-            image[i][j] = flipped[i][j];
+            image[i][j] = newImg[i][j];
     }
 }
 
-void oneTimeRotate(short time) {
+void rotate(short time) {
     for (int k = 0; k < time; ++k) {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 rotated[i][j] = image[j][SIZE - 1 - i];
             }
         }
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j)
-                image[i][j] = rotated[i][j];
-        }
+        burnEffect(rotated);
     }
 }
 
-void rotate() {
-    cout << "Enter degree of rotation\n" <<
+void rotationPrompt() {
+    cout << "Enter degree of rotation: \n" <<
          "90, 180, 270, 360\n";
     int x;
     cin >> x;
     switch (x) {
         case (90):
-            oneTimeRotate(1);
+            rotate(1);
             break;
         case (180):
-            oneTimeRotate(2);
+            rotate(2);
             break;
         case (270):
-            oneTimeRotate(3);
+            rotate(3);
             break;
         default:
             cout << "?";
     }
 }
 
-void darken(){
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            image[i][j] /= 2;
+void controlBrightness(unsigned char c) {
+    (c == ('b'|'B'))? brighten() : darken();
+}
+
+void darken() {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                image[i][j] /= 2;
+            }
         }
     }
+
+void brighten() {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                image[i][j] = (image[i][j] + 255) / 2;
+            }
+        }
+}
+
+void detectEdges() {
+
 }
