@@ -38,6 +38,8 @@ void rotate();
 
 void oneTimeRotate(short times);
 
+void darken();
+
 int main()
 {
     welcomeScreen();
@@ -111,7 +113,10 @@ void userChoice() {
         "-4. Merge\n"<<
         "-5. Flip\n"<<
         "-6. Rotate\n"<<
-        "-7. Save image to a file\n";
+        "-7. Darken\n"<<
+        "-8. Brighten\n"<<
+        "-9. Shrink\n"<<
+        "-g. Save image to a file\n";
     cin>>choice;
     switch (choice) {
         case('1'):
@@ -131,6 +136,9 @@ void userChoice() {
            break;
         case('6'):
             rotate();
+            break;
+        case('7'):
+            darken();
             break;
         case('g'):
             saveImage();
@@ -193,6 +201,7 @@ void flip(){
             image[i][j] = flipped[i][j];
     }
 }
+
 void oneTimeRotate(short time) {
     for (int k = 0; k < time; ++k) {
         for (int i = 0; i < SIZE; ++i) {
@@ -207,23 +216,30 @@ void oneTimeRotate(short time) {
     }
 }
 
-    void rotate() {
-        cout << "Enter degree of rotation\n" <<
-             "90, 180, 270, 360\n";
-        int x;
-        cin >> x;
-        switch (x) {
-            case (90):
-                oneTimeRotate(1);
-                break;
-            case (180):
-                oneTimeRotate(2);
-                break;
-            case (270):
-                oneTimeRotate(3);
-                break;
-            default:
-                cout << "?";
+void rotate() {
+    cout << "Enter degree of rotation\n" <<
+         "90, 180, 270, 360\n";
+    int x;
+    cin >> x;
+    switch (x) {
+        case (90):
+            oneTimeRotate(1);
+            break;
+        case (180):
+            oneTimeRotate(2);
+            break;
+        case (270):
+            oneTimeRotate(3);
+            break;
+        default:
+            cout << "?";
+    }
+}
+
+void darken(){
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            image[i][j] /= 2;
         }
     }
-
+}
