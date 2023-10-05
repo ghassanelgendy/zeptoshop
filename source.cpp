@@ -172,6 +172,7 @@ void userChoice() {
          "-8. Detect edges\n" <<
          "-9. Add smart frame\n" <<
          "-A. Shrink\n" <<
+         "-B. Mirror\n"<<
          "-C. Enlarge\n" <<
          "-S. Save image to a file\n";
     cin >> choice;
@@ -211,7 +212,8 @@ void userChoice() {
             shrink();
             break;
         case ('b'):
-            cout << "b Under construction\n";
+            mirror();
+            break;
         case ('c'):
             enlarge();
             break;
@@ -453,10 +455,40 @@ void shrink() {
 }
 
 void mirror(){
-unsigned char mirrored[SIZE][SIZE];
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-
-        }
+    cout<<"1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
+    unsigned short option;
+    cin>>option;
+    switch (option) {
+        case(1):
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE/2; ++j) {
+                    image[i][j + 128] = image[i][127 - j];
+                }
+            }
+            break;
+        case(2):
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE/2; ++j) {
+                     image[i][127 - j] = image[i][j + 128];
+                }
+            }
+            break;
+        case(3):
+            for (int i = 0; i < SIZE/2; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    image[i+ 128][j] = image[127 - i][j];
+                }
+            }
+            break;
+        case(4):
+            for (int i = 0; i < SIZE/2; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    image[127 - i][j] = image[i+ 128][j];
+                }
+            }
+            break;
+        default:
+            cout<<"How??\n";
+            break;
     }
 }
