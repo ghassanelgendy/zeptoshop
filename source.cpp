@@ -3,14 +3,17 @@
 #include <cstring>
 #include "bmplib.cpp"
 
-int e = 0;
 using namespace std;
+
 //declaring the matrix
 unsigned char image[SIZE][SIZE];
+
 //boolean to catch logical errors
 bool issue = false;
+
 //declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
+
 //initializing the average contrast for each pixel
 int avg = 127;
 
@@ -35,28 +38,40 @@ void invert();
 //"black and white" filter
 void blackAndWhite(int &average);
 
+//optional filter
 void addFrame();
 
+//merge two images
 void merge();
 
+//flip image in two axes
 void flip();
 
+//prompt user to continue editing or save
 int continuePrompt();
 
+//prompt user for rotation degree
 void rotationPrompt();
 
+//rotates the image
 void rotate(short times);
 
+//decrease image brightness by 50%
 void darken();
 
+//increase image brightness by 50%
 void brighten();
 
+//prompt user to modify image brightness
 void controlBrightness(unsigned char c);
 
+//applies the picked filter to the global image[SIZE][SIZE] matrix
 void burnEffect(unsigned char newImg[SIZE][SIZE]);
 
+//detect edges of an object
 void detectEdges();
 
+//enlarge chosen quarter by scale 2x
 void enlarge();
 
 int main() {
@@ -246,7 +261,6 @@ void flip() {
     burnEffect(flipped);
 }
 
-//Applies the effect to the global image[SIZE][SIZE] matrix
 void burnEffect(unsigned char newImg[SIZE][SIZE]) {
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j)
@@ -267,7 +281,7 @@ void rotate(short time) {
 
 void rotationPrompt() {
     cout << "Enter degrees of rotation: \n" <<
-         "90, 180, 270, 360\n";
+    "90, 180, 270, 360\n";
     int x;
     cin >> x;
     switch (x) {
@@ -387,3 +401,5 @@ void enlarge() {
     }
     burnEffect(enlarged);
 }
+
+
