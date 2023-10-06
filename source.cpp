@@ -83,6 +83,10 @@ void shrink();
 
 void mirror();
 
+void shuffle();
+
+void blur();
+
 int main() {
     isIssue = false;
     welcomeScreen();
@@ -180,6 +184,8 @@ int userChoice() {
          "- A. Mirror\n" <<
          "- B. Add smart frame\n" <<
          "- C. Get average pixels contrast (advanced)\n" <<
+         "- D. Shuffle\n" <<
+         "- E. Blur\n" <<
          "- S. Save image to a file\n" <<
          "- 0. Exit :(\n";
     cin >> choice;
@@ -225,6 +231,10 @@ int userChoice() {
             cout << "Average pixels contrast = " << avg << '\n';
             break;
         case ('d'):
+            shuffle();
+            break;
+        case ('e'):
+            blur();
             break;
         case ('s'):
             saveImage();
@@ -502,4 +512,44 @@ void mirror() {
             cout << "How??\n";
             break;
     }
+}
+
+void shuffle(){
+    //if(i < 128 && j > 128){ //second quad                         enlarged[i][j] = image[i][j];
+        // if(i < 128 && j < 128){ //first quad
+        // if(i > 128 && j < 128){ //third quad
+        // if(i > 128 && j > 128){ //fourth quad
+    int shuffled[SIZE][SIZE];
+    int ordera , orderb , orderc ,orderd;
+    cout<<"what order of quarters?";
+    cin>>ordera>>orderb>>orderc>>orderd;
+    for (int i = 0; i <SIZE ; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+
+
+        }
+    }
+}
+
+void blur(){
+    unsigned char blurred[SIZE][SIZE];
+    int sum =0;
+    for (int i = 0; i <SIZE ; ++i) {
+        for (int j = 0; j <SIZE ; ++j) {
+//            for (int k = -5; k <6 ; ++k) {
+//                for (int l = -5; l <6 ; ++l) {
+//                    sum += image[i + k][j + l];
+//                }
+//            }
+//            blurred[i][j] = sum / 25;
+            blurred[i][j] = (image[i][j]+
+                             image[i+1][j]+image[i][j+1]+image[i-1][j]+image[i][j-1]+
+                             image[i+2][j]+image[i][j+2]+image[i-2][j]+image[i][j-2]+
+                             image[i+3][j]+image[i][j+3]+image[i-3][j]+image[i][j-3]+
+                             image[i+4][j]+image[i][j+4]+image[i-4][j]+image[i][j-4]+
+                             image[i+5][j]+image[i][j+5]+image[i-5][j]+image[i][j-5])/25;
+
+        }
+    }
+    burnEffect(blurred);
 }
