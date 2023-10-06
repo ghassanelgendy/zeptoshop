@@ -87,6 +87,8 @@ void shuffle();
 
 void blur();
 
+void crop();
+
 int main() {
     isIssue = false;
     welcomeScreen();
@@ -186,6 +188,7 @@ int userChoice() {
          "- C. Get average pixels contrast (advanced)\n" <<
          "- D. Shuffle\n" <<
          "- E. Blur\n" <<
+         "- F. Crop\n" <<
          "- S. Save image to a file\n" <<
          "- 0. Exit :(\n";
     cin >> choice;
@@ -238,6 +241,9 @@ int userChoice() {
             break;
         case ('s'):
             saveImage();
+            break;
+        case('f'):
+            crop();
             break;
         case ('0'):
             cout << "Bye.\n";
@@ -552,4 +558,18 @@ void blur(){
         }
     }
     burnEffect(blurred);
+}
+void crop(){
+    int x,y,l,w;
+    cout<<"enter x y l w\n";
+    cin>>x>>y>>l>>w;
+
+    for (int i = 0; i < SIZE ; ++i) {
+        for (int j = 0; j <SIZE ; ++j) {
+            if((i< y || i> (y+l)) || (j < x || j > (w+x)))
+                image[i][j]=255;
+        }
+
+
+    }
 }
