@@ -245,6 +245,9 @@ int userChoice() {
         case('f'):
             crop();
             break;
+        case ('g'):
+            shuffle();
+            break;
         case ('0'):
             cout << "Bye.\n";
             return 0;
@@ -520,23 +523,48 @@ void mirror() {
     }
 }
 
-void shuffle(){
-    //if(i < 128 && j > 128){ //second quad                         enlarged[i][j] = image[i][j];
-        // if(i < 128 && j < 128){ //first quad
-        // if(i > 128 && j < 128){ //third quad
-        // if(i > 128 && j > 128){ //fourth quad
-    int shuffled[SIZE][SIZE];
-    int ordera , orderb , orderc ,orderd;
-    cout<<"what order of quarters?";
-    cin>>ordera>>orderb>>orderc>>orderd;
-    for (int i = 0; i <SIZE ; ++i) {
+void shuffle() {
+    //if(i < 128 && j > 128){ //second quad
+    // if(i < 128 && j < 128){ //first quad
+    // if(i > 128 && j < 128){ //third quad
+    // if(i > 128 && j > 128){ //fourth quad
+    unsigned char shuffled[SIZE][SIZE];
+    int order[4]; //array bya5od trtyb el quads men el user
+    int quarter;
+    cout << "what order of quarters?\n";
+    for (int &i: order)
+        cin >> i;
+    for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
-
-
-        }
+            if (i < 128 && j < 128) {
+                quarter = order[0];
+            } else if (i < 128 && j > 128) {
+                quarter = order[1];
+            } else if (i > 128 && j < 128) {
+                quarter = order[2];
+            } else if (i > 128 && j > 128) {
+                quarter = order[3];
+            }
+                switch (quarter) {
+                    case (1):
+                        shuffled[i][j] = image[i][j];
+                        break;
+                    case (2):
+                        shuffled[i][j] = image[i][j + 128];
+                        break;
+                    case (3):
+                        shuffled[i][j] = image[i + 128][j];
+                        break;
+                    case (4):
+                        shuffled[i][j] = image[i + 128][j + 128];
+                        break;
+                    default:
+                        break;
+                }
+            }
     }
+    burnEffect(shuffled);
 }
-
 void blur(){
     unsigned char blurred[SIZE][SIZE];
     int sum =0;
@@ -552,8 +580,8 @@ void blur(){
                              image[i+1][j]+image[i][j+1]+image[i-1][j]+image[i][j-1]+
                              image[i+2][j]+image[i][j+2]+image[i-2][j]+image[i][j-2]+
                              image[i+3][j]+image[i][j+3]+image[i-3][j]+image[i][j-3]+
-                             image[i+4][j]+image[i][j+4]+image[i-4][j]+image[i][j-4]+
-                             image[i+5][j]+image[i][j+5]+image[i-5][j]+image[i][j-5])/25;
+                             image[i+4][j]+image[i][j+4]+image[i-4][j]+
+                             image[i+5][j]+image[i][j+5]+image[i-5][j])/25;
 
         }
     }
@@ -573,3 +601,4 @@ void crop(){
 
     }
 }
+
