@@ -531,7 +531,7 @@ void shuffle() {
     unsigned char shuffled[SIZE][SIZE];
     int order[4]; //array bya5od trtyb el quads men el user
     int quarter;
-    cout << "what order of quarters?\n";
+    cout << "what order of quarters? \n";
     for (int &i: order)
         cin >> i;
     for (int i = 0; i < SIZE; ++i) {
