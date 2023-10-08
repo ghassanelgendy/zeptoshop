@@ -142,22 +142,10 @@ void rotate(short time) {
 
 void rotationPrompt() {
     cout << "Enter degrees of rotation: \n" <<
-         "90, 180, 270, 360\n";
-    int x;
+         "1. 90\n 2. 180\n 3. 270\n";
+    short x;
     cin >> x;
-    switch (x) {
-        case (90):
-            rotate(1);
-            break;
-        case (180):
-            rotate(2);
-            break;
-        case (270):
-            rotate(3);
-            break;
-        default:
-            cout << "?";
-    }
+    rotate(x);
 }
 
 void controlBrightness(unsigned char c) {
@@ -582,6 +570,8 @@ int continuePrompt() {
         unsigned char loop;
         cin >> loop;
         if (loop == 'y' || loop == 'Y') {
+            loadImage(image);
+            getAverage(avg);
             userChoice();
         } else {
             cout << "Bye.\n";
