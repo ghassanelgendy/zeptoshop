@@ -7,6 +7,7 @@
 #include <cstring>
 #include "bmplib.cpp"
 
+#define br break;
 using namespace std;
 
 //declaring the matrix
@@ -242,7 +243,7 @@ int userChoice() {
         case ('s'):
             saveImage();
             break;
-        case('f'):
+        case ('f'):
             crop();
             break;
         case ('g'):
@@ -524,78 +525,194 @@ void mirror() {
 }
 
 void shuffle() {
-    //if(i < 128 && j > 128){ //second quad
-    // if(i < 128 && j < 128){ //first quad
-    // if(i > 128 && j < 128){ //third quad
-    // if(i > 128 && j > 128){ //fourth quad
+    // if(j < 128 && k < 128){ //first quad
+    //if(j < 128 && k > 128){ //second quad
+    // if(j > 128 && k < 128){ //third quad
+    // if(j > 128 && k > 128){ //fourth quad
     unsigned char shuffled[SIZE][SIZE];
-    int order[4]; //array bya5od trtyb el quads men el user
-    int quarter;
+    int quarter = 1;
     cout << "what order of quarters? \n";
-    for (int &i: order)
-        cin >> i;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if (i < 128 && j < 128) {
-                quarter = order[0];
-            } else if (i < 128 && j > 128) {
-                quarter = order[1];
-            } else if (i > 128 && j < 128) {
-                quarter = order[2];
-            } else if (i > 128 && j > 128) {
-                quarter = order[3];
-            }
-                switch (quarter) {
+    int order[4] ; //array bya5od trtyb el quads men el user
+    for (int i = 0; i < 4; ++i) {
+        cin >> order[i];
+    }
+
+    for (int i = 0; i < 4; ++i) {
+
+        switch (quarter) {
+            case (1):
+                switch (order[i]) {
                     case (1):
-                        shuffled[i][j] = image[i][j];
-                        break;
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+                                shuffled[j][k] = image[j][k];
+                            }
+                        }
+                        br
                     case (2):
-                        shuffled[i][j] = image[i][j + 128];
-                        break;
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+                                shuffled[j][k] = image[j][k+128];
+                            }
+                        }
+                        br
                     case (3):
-                        shuffled[i][j] = image[i + 128][j];
-                        break;
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+
+                                shuffled[j][k] = image[j+128][k];
+                            }
+                        }
+                        br
                     case (4):
-                        shuffled[i][j] = image[i + 128][j + 128];
-                        break;
-                    default:
-                        break;
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+                                shuffled[j][k] = image[j + 128][k+ 128 ];
+                            }
+                        }
                 }
-            }
+                quarter++;
+                br
+            case (2):
+                switch (order[i]) {
+                    case (1):
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j][k-128];
+                            }
+                        }
+                        br
+                    case (2):
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j][k];
+                            }
+                        }
+                        br
+                    case (3):
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j+128][k - 128];
+                            }
+                        }
+                        br
+                    case (4):
+                        for (int j = 0; j < 128; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j + 128][k];
+                            }
+                        }
+                }
+                quarter++;
+                br
+            case (3):
+                switch (order[i]) {
+                    case (1):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+                                shuffled[j][k] = image[j-128][k];
+                            }
+                        }
+                        br
+                    case (2):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+                                shuffled[j][k] = image[j - 128][k+128];
+                            }
+                        }
+                        br
+                    case (3):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+                                shuffled[j][k] = image[j][k];
+                            }
+                        }
+                        br
+                    case (4):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 0; k < 128; ++k) {
+                                shuffled[j][k] = image[j][k + 128];
+                            }
+                        }
+                }
+                quarter++;
+
+                br
+            case (4):
+                switch (order[i]) {
+                    case (1):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j-128][k-128];
+                            }
+                        }
+                        br
+                    case (2):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j - 128][k];
+                            }
+                        }
+                        br
+                    case (3):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j][k - 128];
+                            }
+                        }
+                        br
+                    case (4):
+                        for (int j = 128; j < SIZE; ++j) {
+                            for (int k = 128; k < SIZE; ++k) {
+                                shuffled[j][k] = image[j][k];
+                            }
+                        }
+                }
+                quarter++;
+                br
+            default:
+                br
+        }
+
     }
     burnEffect(shuffled);
 }
-void blur(){
+
+
+
+
+void blur() {
     unsigned char blurred[SIZE][SIZE];
-    int sum =0;
-    for (int i = 0; i <SIZE ; ++i) {
-        for (int j = 0; j <SIZE ; ++j) {
+    int sum = 0;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
 //            for (int k = -5; k <6 ; ++k) {
 //                for (int l = -5; l <6 ; ++l) {
 //                    sum += image[i + k][j + l];
 //                }
 //            }
 //            blurred[i][j] = sum / 25;
-            blurred[i][j] = (image[i][j]+
-                             image[i+1][j]+image[i][j+1]+image[i-1][j]+image[i][j-1]+
-                             image[i+2][j]+image[i][j+2]+image[i-2][j]+image[i][j-2]+
-                             image[i+3][j]+image[i][j+3]+image[i-3][j]+image[i][j-3]+
-                             image[i+4][j]+image[i][j+4]+image[i-4][j]+
-                             image[i+5][j]+image[i][j+5]+image[i-5][j])/25;
+            blurred[i][j] = (image[i][j] +
+                             image[i + 1][j] + image[i][j + 1] + image[i - 1][j] + image[i][j - 1] +
+                             image[i + 2][j] + image[i][j + 2] + image[i - 2][j] + image[i][j - 2] +
+                             image[i + 3][j] + image[i][j + 3] + image[i - 3][j] + image[i][j - 3] +
+                             image[i + 4][j] + image[i][j + 4] + image[i - 4][j] +
+                             image[i + 5][j] + image[i][j + 5] + image[i - 5][j]) / 25;
 
         }
     }
     burnEffect(blurred);
 }
-void crop(){
-    int x,y,l,w;
-    cout<<"enter x y l w\n";
-    cin>>x>>y>>l>>w;
 
-    for (int i = 0; i < SIZE ; ++i) {
-        for (int j = 0; j <SIZE ; ++j) {
-            if((i< y || i> (y+l)) || (j < x || j > (w+x)))
-                image[i][j]=255;
+void crop() {
+    int x, y, l, w;
+    cout << "enter x y l w\n";
+    cin >> x >> y >> l >> w;
+
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            if ((i < y || i > (y + l)) || (j < x || j > (w + x)))
+                image[i][j] = 255;
         }
 
 
