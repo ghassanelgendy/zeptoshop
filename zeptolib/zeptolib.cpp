@@ -285,7 +285,7 @@ void enlarge() {
                     }
                 }
             }
-            break;
+            br;
             //second quad
         case (2):
             for (int i = 0; i < 128; ++i) {
@@ -297,7 +297,7 @@ void enlarge() {
                     }
                 }
             }
-            break;
+            br
             //third quad
         case (3):
             for (int i = 128; i < SIZE; ++i) {
@@ -309,7 +309,7 @@ void enlarge() {
                     }
                 }
             }
-            break;
+            br
             //fourth quad
         case (4):
             for (int i = 128; i < SIZE; ++i) {
@@ -321,9 +321,9 @@ void enlarge() {
                     }
                 }
             }
-            break;
+            br
         default:
-            break;
+            br
     }
     burnEffect(enlarged);
 }
@@ -361,31 +361,31 @@ void mirror() {
                     i[j + 128] = i[127 - j];
                 }
             }
-            break;
+            br
         case (2):
             for (auto &i: image) {
                 for (int j = 0; j < SIZE / 2; ++j) {
                     i[127 - j] = i[j + 128];
                 }
             }
-            break;
+            br
         case (3):
             for (int i = 0; i < SIZE / 2; ++i) {
                 for (int j = 0; j < SIZE; ++j) {
                     image[i + 128][j] = image[127 - i][j];
                 }
             }
-            break;
+            br
         case (4):
             for (int i = 0; i < SIZE / 2; ++i) {
                 for (int j = 0; j < SIZE; ++j) {
                     image[127 - i][j] = image[i + 128][j];
                 }
             }
-            break;
+            br
         default:
             cout << "How??\n";
-            break;
+            br
     }
 }
 
@@ -558,65 +558,65 @@ int userChoice() {
     switch (choice) {
         case ('1'):
             blackAndWhite(avg);
-            break;
+            br
         case ('2'):
             invert();
-            break;
+            br
         case ('3'):
             merge();
-            break;
+            br
         case ('4'):
             flip();
-            break;
+            br
         case ('5'):
             cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
             unsigned char c;
             cin >> c;
             controlBrightness(c);
-            break;
+            br
         case ('6'):
             rotationPrompt();
-            break;
+            br
         case ('7'):
             detectEdges();
-            break;
+            br
         case ('8'):
             enlarge();
-            break;
+            br
         case ('9'):
             shrink();
-            break;
+            br
         case ('a'):
             mirror();
-            break;
+            br
         case ('b'):
             addFrame();
-            break;
+            br
         case ('c'):
             cout << "Average pixels contrast = " << avg << '\n';
-            break;
+            br
         case ('d'):
             shuffle();
-            break;
+            br
         case ('e'):
             blur();
-            break;
+            br
         case ('s'):
             saveImage();
-            break;
+            br
         case ('f'):
             crop();
-            break;
+            br
         case ('g'):
             shuffle();
-            break;
+            br
         case ('0'):
             cout << "Bye.\n";
             return 0;
         default:
             cout << "Wrong entry<<\n";
             userChoice();
-            break;
+            br
     }
     continuePrompt();
     return 0;
