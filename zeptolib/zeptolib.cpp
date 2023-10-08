@@ -551,7 +551,8 @@ int userChoice() {
          "- E. Blur\n" <<
          "- F. Crop\n" <<
          "- S. Save image to a file\n" <<
-         "- 0. Exit :(\n";
+         "- 0. Exit :(\n"
+         "-> \t";
     cin >> choice;
     choice = tolower(choice);
     switch (choice) {
