@@ -63,7 +63,7 @@ int readRGBBMP(const char* filename, unsigned char inputImage[][SIZE][RGB])
   /* read input bmp into the data matrix */
   if (!(file=fopen(filename,"rb")))
 	{
-	  cout << "Cannot open file: " << filename <<endl;
+	  cout <<"Cannot open file: " << filename <<endl;
 	  return(1);
 	}
 
@@ -157,7 +157,7 @@ int writeRGBBMP(const char* filename, unsigned char outputImage[][SIZE][RGB])
   // write result bmp file
   if (!(file=fopen(filename,"wb")))
     {
-      cout << "Cannot open file: " << filename << endl;
+      cout <<"Cannot open file: " << filename << endl;
       return(1);
     }
   fwrite(&hdr, sizeof(unsigned char), 0x36, file);
@@ -209,7 +209,7 @@ int readGSBMP(const char* filename, unsigned char inputImage[][SIZE])
   /* read input bmp into the data matrix */
   if (!(file=fopen(filename,"rb")))
 	{
-	  cout << "Cannot open file: " << filename <<endl;
+	  cout <<"Cannot open file: " << filename <<endl;
 	  return(1);
 	}
 
@@ -305,7 +305,7 @@ int writeGSBMP(const char* filename, unsigned char outputImage[][SIZE])
   // write result bmp file
   if (!(file=fopen(filename,"wb")))
     {
-      cout << "Cannot open file: " << filename << endl;
+      cout <<"Cannot open file: " << filename << endl;
       return(1);
     }
   uint8 z = 0;
