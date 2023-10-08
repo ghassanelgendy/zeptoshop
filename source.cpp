@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include "bmplib.cpp"
+#include <cmath>
 
 #define br break;
 using namespace std;
@@ -15,6 +16,8 @@ unsigned char image[SIZE][SIZE];
 
 //boolean to catch logical errors
 bool isIssue = false;
+
+bool quartError = false;
 
 //declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
@@ -82,13 +85,20 @@ void enlarge();
 //shrink image by a desired scale
 void shrink();
 
+//mirrors chosen half of the imagw
 void mirror();
 
+//shuffles quarters of the image
 void shuffle();
 
+//blurs the image
 void blur();
 
+//crops the image from desired point with desired dimensions
 void crop();
+
+//skews the image horizontally or vertically
+void skew();
 
 int main() {
     isIssue = false;
@@ -190,6 +200,7 @@ int userChoice() {
          "- D. Shuffle\n" <<
          "- E. Blur\n" <<
          "- F. Crop\n" <<
+         "- G. Skew\n" <<
          "- S. Save image to a file\n" <<
          "- 0. Exit :(\n";
     cin >> choice;
@@ -247,7 +258,7 @@ int userChoice() {
             crop();
             break;
         case ('g'):
-            shuffle();
+            skew();
             break;
         case ('0'):
             cout << "Bye.\n";
@@ -525,14 +536,19 @@ void mirror() {
 }
 
 void shuffle() {
+    start:
     unsigned char shuffled[SIZE][SIZE];
     int quarter = 1;
     cout << "what order of quarters? \n";
     int order[4];
-    for (int & i : order) {
+    for (int &i: order) {
         cin >> i;
+        if (i < 0 || i > 4){
+            cout << "Please enter a valid order\n";
+            goto start;
+        }
     }
-    for (int i : order) {
+    for (int i: order) {
         switch (quarter) {
             case (1):
                 for (int j = 0; j < 128; ++j) {
@@ -623,9 +639,6 @@ void shuffle() {
     burnEffect(shuffled);
 }
 
-
-
-
 void blur() {
     unsigned char blurred[SIZE][SIZE];
     int sum = 0;
@@ -663,4 +676,34 @@ void crop() {
 
     }
 }
+
+void skew() {
+    unsigned char skewed[SIZE][SIZE];
+    int angle;
+    cin >> angle;
+    int Rangle = angle * M_PI / 180;
+    int side = tan(Rangle) * 256;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            int x = i * tan(Rangle);
+            skewed[i][j] = image[i][j];
+
+        }
+
+        for (int k = 0; k < side; ++k) {
+            for (int j = 0; j < SIZE; ++j) {
+                skewed[k][j] = 255;
+            }
+        }
+        burnEffect(skewed);
+
+    }
+}
+
+
+
+
+
+
+
 
