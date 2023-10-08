@@ -14,6 +14,8 @@ int main() {
     loadImage(image, RGBImage);
     if (!isIssue) {
         getAverage(avg);
+        imageInfo();
+
         userChoice();
     } else {
         cout << errorMsg;

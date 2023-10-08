@@ -18,6 +18,7 @@ unsigned char image[SIZE][SIZE];
 unsigned char RGBImage[SIZE][SIZE][RGB];
 //boolean to catch logical errors
 bool isIssue = false;
+
 bool isRGB;
 //declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
@@ -31,8 +32,18 @@ void darken();
 //initializing the average contrast for each pixel
 int avg = 127;
 
+int RGBAvg = 128;
+
+int iSize=0;
+
 int continuePrompt();
 
+void imageInfo() {
+    cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale") << "\nimage average contrast: "<< avg
+         << "\nfile size: "<<iSize/1024
+         << "KB\n\t\t\t\t\t  === Have fun and get creative! ===\n\n";
+
+}
 
 void detectColorMode(string filename) {
     FILE *p_file = NULL;
@@ -40,10 +51,12 @@ void detectColorMode(string filename) {
     fseek(p_file, 0, SEEK_END);
     int size = ftell(p_file);
     fclose(p_file);
+    iSize = size;
     if (size > 66666)
         isRGB = true;
     else
         isRGB = false;
+
 }
 
 void loadImage(unsigned char img[SIZE][SIZE], unsigned char RGBImg[SIZE][SIZE][RGB]) {
@@ -56,7 +69,7 @@ void loadImage(unsigned char img[SIZE][SIZE], unsigned char RGBImg[SIZE][SIZE][R
     strcat(imageFileName, ".bmp");
     detectColorMode(imageFileName);
     if (isRGB) {
-        (readRGBBMP(imageFileName, RGBImg)) ? isIssue = true : readRGBBMP(imageFileName, RGBImg);
+        readRGBBMP(imageFileName, RGBImg);
     } else {
         (readGSBMP(imageFileName, img)) ? isIssue = true : readGSBMP(imageFileName, img);
     }
@@ -91,15 +104,25 @@ void welcomeScreen() {
 }
 
 void getAverage(int &average) {
-
     int sum = 0;
-    for (auto &i: image) {
-        for (unsigned char &j: i) {
-            sum += j;
+    if(isRGB) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                unsigned char grayscale = (RGBImage[i][j][0] + RGBImage[i][j][1] + RGBImage[i][j][2]) / 3;
+                sum+=grayscale;
+            }
         }
+        average = sum / (SIZE * SIZE) ;
     }
-    average = (sum / (SIZE * SIZE));
-    // cout << "\t\t\t\t<----- FOR DEBUGGING I'M IN LINE (118) - Average contrast: <-----" << average << "\n";
+    else{
+        for (auto &i: image) {
+            for (unsigned char &j: i) {
+                sum += j;
+            }
+        }
+        average = sum / (SIZE * SIZE);
+        // cout << "\t\t\t\t<----- FOR DEBUGGING I'M IN LINE (118) - Average contrast: <-----" << average << "\n";
+    }
 }
 
 void invert() {
@@ -115,9 +138,7 @@ void blackAndWhite(int &average) {
     if (isRGB) {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
-                unsigned char grayscale = (RGBImage[i][j][0] +
-                                           RGBImage[i][j][1] +
-                                           RGBImage[i][j][2]) / 3;
+                unsigned char grayscale = (RGBImage[i][j][0] + RGBImage[i][j][1] + RGBImage[i][j][2]) / 3;
                 // Set R, G, and B to the grayscale value
                 for (int k = 0; k < RGB; ++k) {
                     RGBImage[i][j][k] = grayscale;
