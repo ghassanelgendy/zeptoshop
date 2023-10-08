@@ -302,6 +302,7 @@ void merge() {
 }
 
 void flip() {
+    start:
     cout << "(V) to flip vertically, (H) to flip horizontally\n";
     unsigned char flipped[SIZE][SIZE];
     char x;
@@ -312,12 +313,17 @@ void flip() {
                 flipped[i][j] = image[SIZE - 1 - i][j];
             }
         }
-    } else {
+    }
+    else if (x == 'h' || x == 'H') {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 flipped[i][j] = image[i][SIZE - 1 - j];
             }
         }
+    }
+    else{
+        cout<<"please enter a valid input.\n";
+        goto start;
     }
     burnEffect(flipped);
 }
@@ -341,7 +347,7 @@ void rotate(short time) {
 }
 
 void rotationPrompt() {
-    cout << "Enter degrees of rotation: \n" <<
+    cout << "Enter degree of rotation: \n" <<
          "90, 180, 270, 360\n";
     int x;
     cin >> x;
@@ -356,7 +362,8 @@ void rotationPrompt() {
             rotate(3);
             break;
         default:
-            cout << "?";
+            cout << "?\n";
+            rotationPrompt();
     }
 }
 
@@ -415,11 +422,15 @@ void addFrame() {
 }
 
 void enlarge() {
-    unsigned short x;
+    start :
+    unsigned short x =0;
     unsigned char enlarged[SIZE][SIZE];
-
     cout << "Which quarter do you want to enlarge?\n";
     cin >> x;
+    if (x < 0 || x > 4) {
+        cout << "choose a quarter from 1-4 please\n";
+        goto start;
+    }
     switch (x) {
         //first quad
         case (1):
@@ -531,6 +542,7 @@ void mirror() {
             break;
         default:
             cout << "How??\n";
+            mirror();
             break;
     }
 }
@@ -543,7 +555,7 @@ void shuffle() {
     int order[4];
     for (int &i: order) {
         cin >> i;
-        if (i < 0 || i > 4){
+        if (i < 0 || i > 4) {
             cout << "Please enter a valid order\n";
             goto start;
         }
@@ -641,22 +653,13 @@ void shuffle() {
 
 void blur() {
     unsigned char blurred[SIZE][SIZE];
-    int sum = 0;
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
-//            for (int k = -5; k <6 ; ++k) {
-//                for (int l = -5; l <6 ; ++l) {
-//                    sum += image[i + k][j + l];
-//                }
-//            }
-//            blurred[i][j] = sum / 25;
-            blurred[i][j] = (image[i][j] +
-                             image[i + 1][j] + image[i][j + 1] + image[i - 1][j] + image[i][j - 1] +
-                             image[i + 2][j] + image[i][j + 2] + image[i - 2][j] + image[i][j - 2] +
-                             image[i + 3][j] + image[i][j + 3] + image[i - 3][j] + image[i][j - 3] +
-                             image[i + 4][j] + image[i][j + 4] + image[i - 4][j] +
-                             image[i + 5][j] + image[i][j + 5] + image[i - 5][j]) / 25;
-
+            int sum = 0;
+            for (int k = -5; k <= 5; ++k) {
+                sum += image[i + k][j] + image[i][j + k];
+            }
+            blurred[i][j] = sum / 25;
         }
     }
     burnEffect(blurred);
