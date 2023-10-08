@@ -5,17 +5,18 @@
 //3/10/2023//
 #include <iostream>
 #include "zeptolib/zeptolib.cpp"
+
 using namespace std;
 
 int main() {
     isIssue = false;
     welcomeScreen();
-    loadImage(image);
+    loadImage(image, RGBImage);
     if (!isIssue) {
         getAverage(avg);
         userChoice();
     } else {
-        cout <<errorMsg;
+        cout << errorMsg;
         main();
     }
     return 0;
