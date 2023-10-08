@@ -525,155 +525,100 @@ void mirror() {
 }
 
 void shuffle() {
-    // if(j < 128 && k < 128){ //first quad
-    //if(j < 128 && k > 128){ //second quad
-    // if(j > 128 && k < 128){ //third quad
-    // if(j > 128 && k > 128){ //fourth quad
     unsigned char shuffled[SIZE][SIZE];
     int quarter = 1;
     cout << "what order of quarters? \n";
-    int order[4] ; //array bya5od trtyb el quads men el user
-    for (int i = 0; i < 4; ++i) {
-        cin >> order[i];
+    int order[4];
+    for (int & i : order) {
+        cin >> i;
     }
-
-    for (int i = 0; i < 4; ++i) {
-
+    for (int i : order) {
         switch (quarter) {
             case (1):
-                switch (order[i]) {
-                    case (1):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 0; k < 128; ++k) {
+                for (int j = 0; j < 128; ++j) {
+                    for (int k = 0; k < 128; ++k) {
+                        switch (i) {
+                            case (1):
                                 shuffled[j][k] = image[j][k];
-                            }
-                        }
-                        br
-                    case (2):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 0; k < 128; ++k) {
-                                shuffled[j][k] = image[j][k+128];
-                            }
-                        }
-                        br
-                    case (3):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 0; k < 128; ++k) {
+                                br
+                            case (2):
+                                shuffled[j][k] = image[j][k + 128];
 
-                                shuffled[j][k] = image[j+128][k];
-                            }
+                                br
+                            case (3):
+                                shuffled[j][k] = image[j + 128][k];
+                                br
+                            case (4):
+                                shuffled[j][k] = image[j + 128][k + 128];
                         }
-                        br
-                    case (4):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 0; k < 128; ++k) {
-                                shuffled[j][k] = image[j + 128][k+ 128 ];
-                            }
-                        }
+                    }
                 }
-                quarter++;
                 br
             case (2):
-                switch (order[i]) {
-                    case (1):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
-                                shuffled[j][k] = image[j][k-128];
-                            }
-                        }
-                        br
-                    case (2):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
+                for (int j = 0; j < 128; ++j) {
+                    for (int k = 128; k < SIZE; ++k) {
+                        switch (i) {
+                            case (1):
+                                shuffled[j][k] = image[j][k - 128];
+                                br
+                            case (2):
                                 shuffled[j][k] = image[j][k];
-                            }
-                        }
-                        br
-                    case (3):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
-                                shuffled[j][k] = image[j+128][k - 128];
-                            }
-                        }
-                        br
-                    case (4):
-                        for (int j = 0; j < 128; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
+                                br
+                            case (3):
+                                shuffled[j][k] = image[j + 128][k - 128];
+                                br
+                            case (4):
                                 shuffled[j][k] = image[j + 128][k];
-                            }
                         }
+                    }
                 }
-                quarter++;
+
                 br
             case (3):
-                switch (order[i]) {
-                    case (1):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 0; k < 128; ++k) {
-                                shuffled[j][k] = image[j-128][k];
-                            }
-                        }
-                        br
-                    case (2):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 0; k < 128; ++k) {
-                                shuffled[j][k] = image[j - 128][k+128];
-                            }
-                        }
-                        br
-                    case (3):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 0; k < 128; ++k) {
+                for (int j = 128; j < SIZE; ++j) {
+                    for (int k = 0; k < 128; ++k) {
+                        switch (i) {
+                            case (1):
+                                shuffled[j][k] = image[j - 128][k];
+                                br
+                            case (2):
+                                shuffled[j][k] = image[j - 128][k + 128];
+                                br
+                            case (3):
                                 shuffled[j][k] = image[j][k];
-                            }
-                        }
-                        br
-                    case (4):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 0; k < 128; ++k) {
+                                br
+                            case (4):
                                 shuffled[j][k] = image[j][k + 128];
-                            }
+
                         }
+                    }
                 }
-                quarter++;
 
                 br
             case (4):
-                switch (order[i]) {
-                    case (1):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
-                                shuffled[j][k] = image[j-128][k-128];
-                            }
-                        }
-                        br
-                    case (2):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
+                for (int j = 128; j < SIZE; ++j) {
+                    for (int k = 128; k < SIZE; ++k) {
+                        switch (i) {
+                            case (1):
+                                shuffled[j][k] = image[j - 128][k - 128];
+                                br
+                            case (2):
                                 shuffled[j][k] = image[j - 128][k];
-                            }
-                        }
-                        br
-                    case (3):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
+                                br
+                            case (3):
                                 shuffled[j][k] = image[j][k - 128];
-                            }
-                        }
-                        br
-                    case (4):
-                        for (int j = 128; j < SIZE; ++j) {
-                            for (int k = 128; k < SIZE; ++k) {
+                                br
+                            case (4):
                                 shuffled[j][k] = image[j][k];
-                            }
+
                         }
+                    }
                 }
-                quarter++;
                 br
             default:
                 br
         }
-
+        quarter++;
     }
     burnEffect(shuffled);
 }
