@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include "../bmplib.cpp"
+
 #define br break;
 
 using namespace std;
@@ -13,8 +14,11 @@ using namespace std;
 string errorMsg = "\t\t\t\t==> An unexpected error happened please try again! <==\n";
 //declaring the matrix
 unsigned char image[SIZE][SIZE];
+//declaring the 3D RGB matrix
+unsigned char RGBImage[SIZE][SIZE][RGB];
 //boolean to catch logical errors
 bool isIssue = false;
+bool isRGB;
 //declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
 
@@ -23,23 +27,41 @@ void burnEffect(unsigned char newImg[SIZE][SIZE]);
 void brighten();
 
 void darken();
+
 //initializing the average contrast for each pixel
 int avg = 127;
 
 int continuePrompt();
 
-void loadImage(unsigned char img[SIZE][SIZE]) {
+
+void detectColorMode(string filename) {
+    FILE *p_file = NULL;
+    p_file = fopen(filename.c_str(), "rb");
+    fseek(p_file, 0, SEEK_END);
+    int size = ftell(p_file);
+    fclose(p_file);
+    if (size > 66666)
+        isRGB = true;
+    else
+        isRGB = false;
+}
+
+void loadImage(unsigned char img[SIZE][SIZE], unsigned char RGBImg[SIZE][SIZE][RGB]) {
 
     char imageFileName[100];
-
     // Get gray scale image file name
     cout << "Enter the source image file name: ";
     cin >> imageFileName;
-
     // Add to it .bmp extension and load image
     strcat(imageFileName, ".bmp");
-    (readGSBMP(imageFileName, img)) ? isIssue = true : readGSBMP(imageFileName, img);
+    detectColorMode(imageFileName);
+    if (isRGB) {
+        (readRGBBMP(imageFileName, RGBImg)) ? isIssue = true : readRGBBMP(imageFileName, RGBImg);
+    } else {
+        (readGSBMP(imageFileName, img)) ? isIssue = true : readGSBMP(imageFileName, img);
+    }
     cout << '\n';
+
 }
 
 void saveImage() {
@@ -52,8 +74,15 @@ void saveImage() {
 
     // Add to it .bmp extension and load image
     strcat(imageFileName, ".bmp");
-    writeGSBMP(imageFileName, image);
+    if (isRGB) {
+        writeRGBBMP(imageFileName, RGBImage);
+
+    } else {
+
+        writeGSBMP(imageFileName, image);
+    }
     cout << '\n';
+
 }
 
 void welcomeScreen() {
@@ -83,9 +112,23 @@ void invert() {
 }
 
 void blackAndWhite(int &average) {
-    for (auto &i: image) {
-        for (unsigned char &j: i) {
-            (j > average) ? j = 255 : j = 0;
+    if (isRGB) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                unsigned char grayscale = (RGBImage[i][j][0] +
+                                           RGBImage[i][j][1] +
+                                           RGBImage[i][j][2]) / 3;
+                // Set R, G, and B to the grayscale value
+                for (int k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = grayscale;
+                }
+            }
+        }
+    } else {
+        for (auto &i: image) {
+            for (unsigned char &j: i) {
+                (j > average) ? j = 255 : j = 0;
+            }
         }
     }
 }
@@ -93,7 +136,8 @@ void blackAndWhite(int &average) {
 void merge() {
     cout << "Load the second image, ";
     unsigned char secImage[SIZE][SIZE];
-    loadImage(secImage);
+    unsigned char secRGBImage[SIZE][SIZE][RGB];
+    loadImage(secImage, secRGBImage);
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             image[i][j] = (image[i][j] + secImage[i][j]) / 2;
@@ -291,14 +335,14 @@ void mirror() {
     cin >> option;
     switch (option) {
         case (1):
-            for (auto & i : image) {
+            for (auto &i: image) {
                 for (int j = 0; j < SIZE / 2; ++j) {
                     i[j + 128] = i[127 - j];
                 }
             }
             break;
         case (2):
-            for (auto & i : image) {
+            for (auto &i: image) {
                 for (int j = 0; j < SIZE / 2; ++j) {
                     i[127 - j] = i[j + 128];
                 }
@@ -329,10 +373,10 @@ void shuffle() {
     int quarter = 1;
     cout << "what order of quarters? \n";
     int order[4];
-    for (int & i : order) {
+    for (int &i: order) {
         cin >> i;
     }
-    for (int i : order) {
+    for (int i: order) {
         switch (quarter) {
             case (1):
                 for (int j = 0; j < 128; ++j) {
@@ -352,7 +396,7 @@ void shuffle() {
                                 shuffled[j][k] = image[j + 128][k + 128];
                                 br
                             default:
-                                cout<<errorMsg;
+                                cout << errorMsg;
                         }
                     }
                 }
@@ -374,7 +418,7 @@ void shuffle() {
                                 shuffled[j][k] = image[j + 128][k];
                                 br
                             default:
-                                cout<<errorMsg;
+                                cout << errorMsg;
                         }
                     }
                 }
@@ -397,7 +441,7 @@ void shuffle() {
                                 shuffled[j][k] = image[j][k + 128];
                                 br
                             default:
-                                cout<<errorMsg;
+                                cout << errorMsg;
 
                         }
                     }
@@ -421,7 +465,7 @@ void shuffle() {
                                 shuffled[j][k] = image[j][k];
                                 br
                             default:
-                                cout<<errorMsg;
+                                cout << errorMsg;
 
                         }
                     }
@@ -558,7 +602,7 @@ int userChoice() {
 
 int continuePrompt() {
 
-    cout << "\t\t\t\t\t<----- Do you want to save or do something else? ----->\n" <<
+    cout << "\t\t\t\t\t===  Do you want to save or do something else? ===\n" <<
          "(S) to save, (D) to do something else\n";
     char c;
     cin >> c;
@@ -570,7 +614,7 @@ int continuePrompt() {
         unsigned char loop;
         cin >> loop;
         if (loop == 'y' || loop == 'Y') {
-            loadImage(image);
+            loadImage(image, RGBImage);
             getAverage(avg);
             userChoice();
         } else {
