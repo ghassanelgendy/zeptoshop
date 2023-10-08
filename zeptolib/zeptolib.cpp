@@ -100,7 +100,7 @@ void saveImage() {
 
 void welcomeScreen() {
 
-    cout << "\t\t\t\t=== Welcome to ZETOSHOP: The Who Needs 'Em Edition ===\n";
+    cout << "\t\t\t\t=== Welcome to ZEPTOSHOP: The Who Needs 'Em Edition ===\n";
 }
 
 void getAverage(int &average) {
