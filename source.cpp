@@ -15,7 +15,6 @@ int main() {
     if (!isIssue) {
         getAverage(avg);
         imageInfo();
-
         userChoice();
     } else {
         cout << errorMsg;

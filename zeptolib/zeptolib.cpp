@@ -22,36 +22,27 @@ bool isIssue = false;
 bool isRGB;
 //declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
-
-void burnEffect(unsigned char newImg[SIZE][SIZE]);
-
-void brighten();
-
-void darken();
-
 //initializing the average contrast for each pixel
 int avg = 127;
 
-int RGBAvg = 128;
-
-int iSize=0;
+int imageSize=0;
 
 int continuePrompt();
 
 void imageInfo() {
     cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale") << "\nimage average contrast: "<< avg
-         << "\nfile size: "<<iSize/1024
+         << "\nfile size: "<<imageSize/1024
          << "KB\n\t\t\t\t\t  === Have fun and get creative! ===\n\n";
 
 }
 
-void detectColorMode(string filename) {
-    FILE *p_file = NULL;
+void detectColorMode(const string& filename) {
+    FILE *p_file;
     p_file = fopen(filename.c_str(), "rb");
     fseek(p_file, 0, SEEK_END);
     int size = ftell(p_file);
     fclose(p_file);
-    iSize = size;
+    imageSize = size;
     if (size > 66666)
         isRGB = true;
     else
@@ -101,6 +92,24 @@ void saveImage() {
 void welcomeScreen() {
 
     cout << "\t\t\t\t=== Welcome to ZEPTOSHOP: The Who Needs 'Em Edition ===\n";
+}
+
+void burnEffect(unsigned char newImg[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j)
+            image[i][j] = newImg[i][j];
+    }
+}
+
+void rotate(short time) {
+    for (int k = 0; k < time; ++k) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                rotated[i][j] = image[j][SIZE - 1 - i];
+            }
+        }
+        burnEffect(rotated);
+    }
 }
 
 void getAverage(int &average) {
@@ -187,24 +196,6 @@ void flip() {
     burnEffect(flipped);
 }
 
-void burnEffect(unsigned char newImg[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j)
-            image[i][j] = newImg[i][j];
-    }
-}
-
-void rotate(short time) {
-    for (int k = 0; k < time; ++k) {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                rotated[i][j] = image[j][SIZE - 1 - i];
-            }
-        }
-        burnEffect(rotated);
-    }
-}
-
 void rotationPrompt() {
     cout << "Enter degrees of rotation: \n" <<
          "1. 90\n 2. 180\n 3. 270\n";
@@ -213,8 +204,12 @@ void rotationPrompt() {
     rotate(x);
 }
 
-void controlBrightness(unsigned char c) {
-    (c == ('b' | 'B')) ? brighten() : darken();
+void brighten() {
+    for (auto &i: image) {
+        for (unsigned char &j: i) {
+            j = (j + 255) / 2;
+        }
+    }
 }
 
 void darken() {
@@ -225,12 +220,8 @@ void darken() {
     }
 }
 
-void brighten() {
-    for (auto &i: image) {
-        for (unsigned char &j: i) {
-            j = (j + 255) / 2;
-        }
-    }
+void controlBrightness(unsigned char c) {
+    (c == ('b' | 'B')) ? brighten() : darken();
 }
 
 void detectEdges() {
@@ -285,7 +276,7 @@ void enlarge() {
                     }
                 }
             }
-            br;
+            br
             //second quad
         case (2):
             for (int i = 0; i < 128; ++i) {
@@ -392,7 +383,7 @@ void mirror() {
 void shuffle() {
     unsigned char shuffled[SIZE][SIZE];
     int quarter = 1;
-    cout << "what order of quarters? \n";
+    cout <<"what order of quarters? \n";
     int order[4];
     for (int &i: order) {
         cin >> i;
@@ -552,7 +543,7 @@ int userChoice() {
          "- F. Crop\n" <<
          "- S. Save image to a file\n" <<
          "- 0. Exit :(\n"
-         "-> \t";
+         "->";
     cin >> choice;
     choice = tolower(choice);
     switch (choice) {
@@ -638,6 +629,7 @@ int continuePrompt() {
         if (loop == 'y' || loop == 'Y') {
             loadImage(image, RGBImage);
             getAverage(avg);
+            imageInfo();
             userChoice();
         } else {
             cout << "Bye.\n";
