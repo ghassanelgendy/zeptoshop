@@ -252,11 +252,24 @@ void rotationPrompt() {
 }
 
 void brighten() {
-    for (auto &i: image) {
-        for (unsigned char &j: i) {
-            j = (j + 255) / 2;
+    if (isRGB) {
+        for (int i = 0; i <SIZE; ++i) {
+            for (int j = 0; j <SIZE; ++j) {
+                for (int k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = (RGBImage[i][j][k] + 255) / 2;
+
+                }
+            }
         }
     }
+    else{
+        for (auto &i: image) {
+            for (unsigned char &j: i) {
+                j = (j + 255) / 2;
+            }
+        }
+    }
+
 }
 
 void darken() {
