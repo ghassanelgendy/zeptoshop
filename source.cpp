@@ -9,8 +9,9 @@
 using namespace std;
 
 int main() {
+    startMainLabel:
     isIssue = false;
-    welcomeScreen();
+    cout << "\t\t\t\t=== Welcome to ZEPTOSHOP: The Who Needs 'Em Edition ===\n";
     loadImage(image, RGBImage);
     if (!isIssue) {
         getAverage(avg);
@@ -18,7 +19,7 @@ int main() {
         userChoice();
     } else {
         cout << errorMsg;
-        main();
+        goto startMainLabel;
     }
     return 0;
 }
