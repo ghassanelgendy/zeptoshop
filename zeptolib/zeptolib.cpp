@@ -1,42 +1,46 @@
-//Image Processor Project by:
-//Ghassan Elgendy 20220239     E-Mail: Ghassanelgendyy@gmail.com
-//Rowan Ammar     20220133     E-Mail: rawanehab523@gmail.com
-//Jana Mohamed    20220470     E-Mail: janamohamedramadan335@gmail.com
-//3/10/2023//
+// Image Processor Project by:
+// Ghassan Elgendy 20220239     E-Mail: Ghassanelgendyy@gmail.com
+// Rowan Ammar     20220133     E-Mail: rawanehab523@gmail.com
+// Jana Mohamed    20220470     E-Mail: janamohamedramadan335@gmail.com
+// 3/10/2023// 
 #include <iostream>
 #include <cstring>
+#include <vector>
 #include "../bmplib.cpp"
 
 #define br break;
-
 using namespace std;
-//error message
+// error message
 string errorMsg = "\t\t\t\t==> An unexpected error happened please try again! <==\n";
-//declaring the matrix
+// declaring the matrix
 unsigned char image[SIZE][SIZE];
-//declaring the 3D RGB matrix
+// declaring the 3D RGB matrix
 unsigned char RGBImage[SIZE][SIZE][RGB];
-//boolean to catch logical errors
+// boolean to catch logical errors
 bool isIssue = false;
 
+void userChoice();
+
+void continuePrompt();
+
 bool isRGB;
-//declaring the matrix for rotation
+// declaring the matrix for rotation
 unsigned char rotated[SIZE][SIZE];
-//initializing the average contrast for each pixel
+unsigned char rotatedRGB[SIZE][SIZE][RGB];
+
+// initializing the average contrast for each pixel
 int avg = 127;
 
-int imageSize=0;
-
-int continuePrompt();
+int imageSize = 0;
 
 void imageInfo() {
-    cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale") << "\nimage average contrast: "<< avg
-         << "\nfile size: "<<imageSize/1024
+    cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale")
+         << "\nimage average contrast: " << avg
+         << "\nfile size: " << imageSize / 1024
          << "KB\n\t\t\t\t\t  === Have fun and get creative! ===\n\n";
-
 }
 
-void detectColorMode(const string& filename) {
+void detectColorMode(const string &filename) {
     FILE *p_file;
     p_file = fopen(filename.c_str(), "rb");
     fseek(p_file, 0, SEEK_END);
@@ -53,10 +57,10 @@ void detectColorMode(const string& filename) {
 void loadImage(unsigned char img[SIZE][SIZE], unsigned char RGBImg[SIZE][SIZE][RGB]) {
 
     char imageFileName[100];
-    // Get gray scale image file name
+    //  Get image file name
     cout << "Enter the source image file name: ";
     cin >> imageFileName;
-    // Add to it .bmp extension and load image
+    //  Add to it .bmp extension and load image
     strcat(imageFileName, ".bmp");
     detectColorMode(imageFileName);
     if (isRGB) {
@@ -72,11 +76,11 @@ void saveImage() {
 
     char imageFileName[100];
 
-    // Get gray scale image target file name
+    //  Get gray scale image target file name
     cout << "Enter the target image file name: ";
     cin >> imageFileName;
 
-    // Add to it .bmp extension and load image
+    //  Add to it .bmp extension and load image
     strcat(imageFileName, ".bmp");
     if (isRGB) {
         writeRGBBMP(imageFileName, RGBImage);
@@ -86,20 +90,25 @@ void saveImage() {
         writeGSBMP(imageFileName, image);
     }
     cout << '\n';
-
 }
 
-void welcomeScreen() {
 
-    cout << "\t\t\t\t=== Welcome to ZEPTOSHOP: The Who Needs 'Em Edition ===\n";
-}
-
-void burnEffect(unsigned char newImg[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j)
-            image[i][j] = newImg[i][j];
+void burnEffect(unsigned char newImg[SIZE][SIZE], unsigned char newRGBImg[SIZE][SIZE][RGB]) {
+    if (isRGB) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j)
+                for (int k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = newRGBImg[i][j][k];
+                }
+        }
+    } else {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j)
+                image[i][j] = newImg[i][j];
+        }
     }
 }
+
 
 void rotate(short time) {
     for (int k = 0; k < time; ++k) {
@@ -108,47 +117,54 @@ void rotate(short time) {
                 rotated[i][j] = image[j][SIZE - 1 - i];
             }
         }
-        burnEffect(rotated);
+        burnEffect(rotated, rotatedRGB);
     }
 }
 
 void getAverage(int &average) {
     int sum = 0;
-    if(isRGB) {
+    if (isRGB) {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 unsigned char grayscale = (RGBImage[i][j][0] + RGBImage[i][j][1] + RGBImage[i][j][2]) / 3;
-                sum+=grayscale;
+                sum += grayscale;
             }
         }
-        average = sum / (SIZE * SIZE) ;
-    }
-    else{
+        average = sum / (SIZE * SIZE);
+    } else {
         for (auto &i: image) {
             for (unsigned char &j: i) {
                 sum += j;
             }
         }
         average = sum / (SIZE * SIZE);
-        // cout << "\t\t\t\t<----- FOR DEBUGGING I'M IN LINE (118) - Average contrast: <-----" << average << "\n";
     }
 }
 
 void invert() {
-
-    for (auto &i: image) {
-        for (unsigned char &j: i) {
-            j = 255 - j;
+    if (isRGB) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                for (int k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = 255 - RGBImage[i][j][k];
+                }
+            }
+        }
+    } else {
+        for (auto &i: image) {
+            for (unsigned char &j: i) {
+                j = 255 - j;
+            }
         }
     }
 }
 
-void blackAndWhite(int &average) {
+void blackAndWhite() {
     if (isRGB) {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 unsigned char grayscale = (RGBImage[i][j][0] + RGBImage[i][j][1] + RGBImage[i][j][2]) / 3;
-                // Set R, G, and B to the grayscale value
+                //  Set R, G, and B to the grayscale value
                 for (int k = 0; k < RGB; ++k) {
                     RGBImage[i][j][k] = grayscale;
                 }
@@ -157,7 +173,7 @@ void blackAndWhite(int &average) {
     } else {
         for (auto &i: image) {
             for (unsigned char &j: i) {
-                (j > average) ? j = 255 : j = 0;
+                (j > avg) ? j = 255 : j = 0;
             }
         }
     }
@@ -168,9 +184,19 @@ void merge() {
     unsigned char secImage[SIZE][SIZE];
     unsigned char secRGBImage[SIZE][SIZE][RGB];
     loadImage(secImage, secRGBImage);
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            image[i][j] = (image[i][j] + secImage[i][j]) / 2;
+    if (isRGB) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                for (int k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = (RGBImage[i][j][k] + secRGBImage[i][j][k]) / 2;
+                }
+            }
+        }
+    } else {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                image[i][j] = (image[i][j] + secImage[i][j]) / 2;
+            }
         }
     }
 }
@@ -178,29 +204,50 @@ void merge() {
 void flip() {
     cout << "(V) to flip vertically, (H) to flip horizontally\n";
     unsigned char flipped[SIZE][SIZE];
+    unsigned char flippedRGB[SIZE][SIZE][RGB];
     char x;
     cin >> x;
-    if (x == 'v' || x == 'V') {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                flipped[i][j] = image[SIZE - 1 - i][j];
+    if (isRGB) {
+        if (x == 'v' || x == 'V') {
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    for (int k = 0; k < RGB; ++k)
+                        flippedRGB[i][j][k] = RGBImage[SIZE - 1 - i][j][k];
+                }
+            }
+        } else {
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    for (int k = 0; k < RGB; ++k)
+                        flippedRGB[i][j][k] = RGBImage[i][SIZE - 1 - j][k];
+                }
             }
         }
     } else {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                flipped[i][j] = image[i][SIZE - 1 - j];
+        if (x == 'v' || x == 'V') {
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    flipped[i][j] = image[SIZE - 1 - i][j];
+                }
+            }
+        } else {
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    flipped[i][j] = image[i][SIZE - 1 - j];
+                }
             }
         }
     }
-    burnEffect(flipped);
+    burnEffect(flipped, flippedRGB);
 }
 
 void rotationPrompt() {
+    startRotateLabel:
     cout << "Enter degrees of rotation: \n" <<
-         "1. 90\n 2. 180\n 3. 270\n";
+         "1. 90\n2. 180\n3. 270\n";
     short x;
     cin >> x;
+    if (x > 3) goto startRotateLabel;
     rotate(x);
 }
 
@@ -220,7 +267,10 @@ void darken() {
     }
 }
 
-void controlBrightness(unsigned char c) {
+void controlBrightness() {
+    cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
+    unsigned char c;
+    cin >> c;
     (c == ('b' | 'B')) ? brighten() : darken();
 }
 
@@ -265,7 +315,7 @@ void enlarge() {
     cout << "Which quarter do you want to enlarge?\n";
     cin >> x;
     switch (x) {
-        //first quad
+        // first quad
         case (1):
             for (int i = 0; i < 128; ++i) {
                 for (int j = 0; j < 128; ++j) {
@@ -277,7 +327,7 @@ void enlarge() {
                 }
             }
             br
-            //second quad
+            // second quad
         case (2):
             for (int i = 0; i < 128; ++i) {
                 for (int j = 128; j < SIZE; ++j) {
@@ -289,7 +339,7 @@ void enlarge() {
                 }
             }
             br
-            //third quad
+            // third quad
         case (3):
             for (int i = 128; i < SIZE; ++i) {
                 for (int j = 0; j < 128; ++j) {
@@ -301,7 +351,7 @@ void enlarge() {
                 }
             }
             br
-            //fourth quad
+            // fourth quad
         case (4):
             for (int i = 128; i < SIZE; ++i) {
                 for (int j = 128; j < SIZE; ++j) {
@@ -316,20 +366,22 @@ void enlarge() {
         default:
             br
     }
+/*
     burnEffect(enlarged);
+*/
 }
 
 void shrink() {
-    startShrink:
+    startShrinkLabel:
     unsigned short scale;
-    //declaring new image after apply
+    // declaring new image after apply
     unsigned char shrunk[SIZE][SIZE];
     cout << "At what scale?\n" <<
          "1. 1/2\n2. 1/3\n3. 1/4\n";
     cin >> scale;
     if (scale > 3) {
         cout << "Please i'm not a magician, choose a valid number.\n";
-        goto startShrink;
+        goto startShrinkLabel;
     } else {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
@@ -337,11 +389,14 @@ void shrink() {
                 shrunk[i / (scale + 1)][j / (scale + 1)] = image[i][j];
             }
         }
+/*
         burnEffect(shrunk);
+*/
     }
 }
 
 void mirror() {
+    startMirrorLabel:
     cout << "1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
     unsigned short option;
     cin >> option;
@@ -375,7 +430,8 @@ void mirror() {
             }
             br
         default:
-            cout << "How??\n";
+            cout << errorMsg;
+            goto startMirrorLabel;
             br
     }
 }
@@ -383,7 +439,7 @@ void mirror() {
 void shuffle() {
     unsigned char shuffled[SIZE][SIZE];
     int quarter = 1;
-    cout <<"what order of quarters? \n";
+    cout << "what order of quarters? \n";
     int order[4];
     for (int &i: order) {
         cin >> i;
@@ -413,6 +469,7 @@ void shuffle() {
                     }
                 }
                 br
+
             case (2):
                 for (int j = 0; j < 128; ++j) {
                     for (int k = 128; k < SIZE; ++k) {
@@ -436,6 +493,7 @@ void shuffle() {
                 }
 
                 br
+
             case (3):
                 for (int j = 128; j < SIZE; ++j) {
                     for (int k = 0; k < 128; ++k) {
@@ -458,8 +516,8 @@ void shuffle() {
                         }
                     }
                 }
-
                 br
+
             case (4):
                 for (int j = 128; j < SIZE; ++j) {
                     for (int k = 128; k < SIZE; ++k) {
@@ -478,7 +536,6 @@ void shuffle() {
                                 br
                             default:
                                 cout << errorMsg;
-
                         }
                     }
                 }
@@ -488,7 +545,9 @@ void shuffle() {
         }
         quarter++;
     }
+/*
     burnEffect(shuffled);
+*/
 }
 
 void blur() {
@@ -504,7 +563,9 @@ void blur() {
 
         }
     }
+/*
     burnEffect(blurred);
+*/
 }
 
 void crop() {
@@ -517,14 +578,38 @@ void crop() {
             if ((i < y || i > (y + l)) || (j < x || j > (w + x)))
                 image[i][j] = 255;
         }
-
-
     }
 }
 
-int userChoice() {
+void displayAveragePixelContrast() {
+    cout << "Average pixels contrast = " << avg << '\n';
+}
 
-    unsigned char choice;
+void continuePrompt() {
+    cout << "\t\t\t\t\t===  Do you want to save or do something else? ===\n" <<
+         "(S) to save, (D) to do something else\n";
+    char c;
+    cin >> c;
+    if (c == 'd' || c == 'D')
+        userChoice();
+    else if (c == 's' || c == 'S') {
+        saveImage();
+        cout << "Do you have another image to process? Y/N\n";
+        unsigned char loop;
+        cin >> loop;
+        if (loop == 'y' || loop == 'Y') {
+            loadImage(image, RGBImage);
+            getAverage(avg);
+            imageInfo();
+            userChoice();
+        } else {
+            cout << "Bye.\n";
+            abort();
+        }
+    }
+}
+
+void userChoice() {
     cout << "\t\t\t\t\t=== Please choose what you wanna do ===\n" <<
          "- 1. Black and white filter\n" <<
          "- 2. Invert filter\n" <<
@@ -544,96 +629,16 @@ int userChoice() {
          "- S. Save image to a file\n" <<
          "- 0. Exit :(\n"
          "->";
+    std::vector<void (*)()> functionPointers = {
+            abort, blackAndWhite, invert, merge, flip, // abort() terminates with code 3.
+            controlBrightness, rotationPrompt,
+            detectEdges, enlarge, shrink, mirror,
+            addFrame, displayAveragePixelContrast,
+            shuffle, blur, crop, saveImage
+    };
+    unsigned char choice;
     cin >> choice;
-    choice = tolower(choice);
-    switch (choice) {
-        case ('1'):
-            blackAndWhite(avg);
-            br
-        case ('2'):
-            invert();
-            br
-        case ('3'):
-            merge();
-            br
-        case ('4'):
-            flip();
-            br
-        case ('5'):
-            cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
-            unsigned char c;
-            cin >> c;
-            controlBrightness(c);
-            br
-        case ('6'):
-            rotationPrompt();
-            br
-        case ('7'):
-            detectEdges();
-            br
-        case ('8'):
-            enlarge();
-            br
-        case ('9'):
-            shrink();
-            br
-        case ('a'):
-            mirror();
-            br
-        case ('b'):
-            addFrame();
-            br
-        case ('c'):
-            cout << "Average pixels contrast = " << avg << '\n';
-            br
-        case ('d'):
-            shuffle();
-            br
-        case ('e'):
-            blur();
-            br
-        case ('s'):
-            saveImage();
-            br
-        case ('f'):
-            crop();
-            br
-        case ('g'):
-            shuffle();
-            br
-        case ('0'):
-            cout << "Bye.\n";
-            return 0;
-        default:
-            cout << "Wrong entry<<\n";
-            userChoice();
-            br
-    }
+    unsigned short choiceNumber = choice;
+    (choiceNumber >= 97) ? functionPointers[choiceNumber - 87]() : functionPointers[choiceNumber - 48]();
     continuePrompt();
-    return 0;
-}
-
-int continuePrompt() {
-
-    cout << "\t\t\t\t\t===  Do you want to save or do something else? ===\n" <<
-         "(S) to save, (D) to do something else\n";
-    char c;
-    cin >> c;
-    if (c == 'd' || c == 'D')
-        userChoice();
-    else if (c == 's' || c == 'S') {
-        saveImage();
-        cout << "Do you have another image to process? Y/N\n";
-        unsigned char loop;
-        cin >> loop;
-        if (loop == 'y' || loop == 'Y') {
-            loadImage(image, RGBImage);
-            getAverage(avg);
-            imageInfo();
-            userChoice();
-        } else {
-            cout << "Bye.\n";
-        }
-    }
-    return 0;
 }
