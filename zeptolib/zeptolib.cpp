@@ -8,14 +8,16 @@
 #include <vector>
 #include "../bmplib.cpp"
 
+#define usn unsigned short
+#define usc unsigned char
 #define br break;
 using namespace std;
 // error message
 string errorMsg = "\t\t\t\t==> An unexpected error happened please try again! <==\n";
 // declaring the matrix
-unsigned char image[SIZE][SIZE];
+usc image[SIZE][SIZE];
 // declaring the 3D RGB matrix
-unsigned char RGBImage[SIZE][SIZE][RGB];
+usc RGBImage[SIZE][SIZE][RGB];
 // boolean to catch logical errors
 bool isIssue = false;
 
@@ -25,8 +27,8 @@ void continuePrompt();
 
 bool isRGB;
 // declaring the matrix for rotation
-unsigned char rotated[SIZE][SIZE];
-unsigned char rotatedRGB[SIZE][SIZE][RGB];
+usc rotated[SIZE][SIZE];
+usc rotatedRGB[SIZE][SIZE][RGB];
 
 // initializing the average contrast for each pixel
 int avg = 127;
