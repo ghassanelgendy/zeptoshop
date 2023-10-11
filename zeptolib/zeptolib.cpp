@@ -1,8 +1,10 @@
-// Image Processor Project by:
-// Ghassan Elgendy 20220239     E-Mail: Ghassanelgendyy@gmail.com
-// Rowan Ammar     20220133     E-Mail: rawanehab523@gmail.com
-// Jana Mohamed    20220470     E-Mail: janamohamedramadan335@gmail.com
-// 3/10/2023//
+//FCAI – OOP Programming – 2023 - Assignment #1 - Part 1
+//Program Name: CS213-2023-2022047-20220133-20220239-A1-Part1.cpp
+//Last Modification Date: 11/10/2023
+//Ghassan Elgendy 20220239     E-Mail: Ghassanelgendyy@gmail.com
+//Rowan Ammar     20220133     E-Mail: rawanehab523@gmail.com
+//Jana Mohamed    20220470     E-Mail: janamohamedramadan335@gmail.com
+//Purpose : photo editing app to apply different filters to greyscale and RGB (bonus) images
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -20,21 +22,17 @@ usc image[SIZE][SIZE];
 usc RGBImage[SIZE][SIZE][RGB];
 // boolean to catch logical errors
 bool isIssue = false;
-
+//prompt takes choice from user
 void userChoice();
-
-void continuePrompt();
-
+//boolean to decide what color mode is the image
 bool isRGB;
 // declaring the matrix for rotation
 usc rotated[SIZE][SIZE];
 usc rotatedRGB[SIZE][SIZE][RGB];
-
 // initializing the average contrast for each pixel
 unsigned int avg = 127;
-
+//declaring filesize
 unsigned int imageSize = 0;
-
 void detectColorMode(const string &filename) {
     FILE *p_file;
     p_file = fopen(filename.c_str(), "rb");
@@ -47,7 +45,7 @@ void detectColorMode(const string &filename) {
     else
         isRGB = false;
 }
-
+//load image exists in same directory
 void loadImage(usc img[SIZE][SIZE], usc RGBImg[SIZE][SIZE][RGB]) {
 
     char imageFileName[100];
@@ -65,7 +63,7 @@ void loadImage(usc img[SIZE][SIZE], usc RGBImg[SIZE][SIZE][RGB]) {
     cout << '\n';
 
 }
-
+//applies the picked filter to the global image[SIZE][SIZE] matrix
 void burnEffect(usc newImg[SIZE][SIZE], usc newRGBImg[SIZE][SIZE][RGB]) {
     if (isRGB) {
         for (usn i = 0; i < SIZE; ++i) {
@@ -81,7 +79,7 @@ void burnEffect(usc newImg[SIZE][SIZE], usc newRGBImg[SIZE][SIZE][RGB]) {
         }
     }
 }
-
+//"black and white" filter
 void blackAndWhite() {
     if (isRGB) {
         for (auto &i: RGBImage) {
@@ -101,7 +99,7 @@ void blackAndWhite() {
         }
     }
 }
-
+//"invert" filter
 void invert() {
     if (isRGB) {
         for (usn i = 0; i < SIZE; ++i) {
@@ -119,7 +117,7 @@ void invert() {
         }
     }
 }
-
+//merge two images
 void merge() {
     cout << "Load the second image, ";
     usc secImage[SIZE][SIZE];
@@ -141,7 +139,7 @@ void merge() {
         }
     }
 }
-
+//flip image in two axes
 void flip() {
     cout << "(V) to flip vertically, (H) to flip horizontally\n";
     usc flipped[SIZE][SIZE];
@@ -181,7 +179,7 @@ void flip() {
     }
     burnEffect(flipped, flippedRGB);
 }
-// controlling image brightness
+//increase image brightness by 50%
 void brighten() {
     if (isRGB) {
         for (usn i = 0; i < SIZE; ++i) {
@@ -201,7 +199,7 @@ void brighten() {
     }
 
 }
-
+//decrease image brightness by 50%
 void darken() {
     if (isRGB) {
         for (usn i = 0; i < SIZE; ++i) {
@@ -220,21 +218,21 @@ void darken() {
         }
     }
 }
-
+// controlling image brightness
 void controlBrightness() {
     cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
     usc c;
     cin >> c;
     (c == ('b' | 'B')) ? brighten() : darken();
 }
-
+//displays image info
 void imageInfo() {
     cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale")
          << "\nimage average contrast: " << avg
          << "\nfile size: " << imageSize / 1024
          << "KB\n\t\t\t\t\t  === Have fun and get creative! ===\n\n";
 }
-
+//save image in same directory
 void saveImage() {
 
     char imageFileName[100];
@@ -254,7 +252,7 @@ void saveImage() {
     }
     cout << '\n';
 }
-
+//rotates the image
 void rotate(short time) {
     for (usn k = 0; k < time; ++k) {
         if (isRGB) {
@@ -278,7 +276,7 @@ void rotate(short time) {
         }
     }
 }
-
+//function to generate average contrast for image
 void getAverage(unsigned int &average) {
     unsigned int sum = 0;
     if (isRGB) {
@@ -298,7 +296,7 @@ void getAverage(unsigned int &average) {
         average = sum / (SIZE * SIZE);
     }
 }
-
+//prompt user for rotation degree
 void rotationPrompt() {
     startRotateLabel:
     cout << "Enter degrees of rotation: \n" <<
@@ -308,7 +306,7 @@ void rotationPrompt() {
     if (x > 3) goto startRotateLabel;
     rotate(x);
 }
-
+//detect edges of an object
 void detectEdges() {
     if (isRGB) {
         blackAndWhite();
@@ -339,7 +337,7 @@ void detectEdges() {
         }
     }
 }
-
+//optional filter
 void addFrame() {
     unsigned short clr = 255;
     if (isRGB) {
@@ -364,7 +362,7 @@ void addFrame() {
         }
     }
 }
-
+//enlarge chosen quarter by scale 4x
 void enlarge() {
     unsigned short x;
     usc enlarged[SIZE][SIZE];
@@ -492,7 +490,7 @@ void enlarge() {
     burnEffect(enlarged, enlargedRGB);
 
 }
-
+//shrink image by a desired scale
 void shrink() {
     startShrinkLabel:
     unsigned short scale;
@@ -528,7 +526,7 @@ void shrink() {
         burnEffect(shrunk, shrunkRGB);
     }
 }
-
+//mirrors chosen half of the imagw
 void mirror() {
     startMirrorLabel:
     cout << "1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
@@ -614,7 +612,7 @@ void mirror() {
         }
     }
 }
-
+//shuffles quarters of the image
 void shuffle() {
     startShuffleLabel:
     usc shuffled[SIZE][SIZE];
@@ -839,7 +837,7 @@ void shuffle() {
 
     burnEffect(shuffled, shuffledRGB);
 }
-
+//blurs the image
 void blur() {
     usc blurred[SIZE][SIZE];
     usc blurredRGB[SIZE][SIZE][RGB];
@@ -875,7 +873,7 @@ void blur() {
 
     burnEffect(blurred, blurredRGB);
 }
-
+//crops the image from desired point with desired dimensions
 void crop() {
     usn x, y, l, w;
     cout << "Enter point on x-axis, y-axis , length and width\n";
@@ -899,11 +897,11 @@ void crop() {
     }
 
 }
-
+//displays the average contrast
 void displayAveragePixelContrast() {
     cout << "Average pixels contrast = " << avg << '\n';
 }
-
+//prompt user to continue editing or save
 void continuePrompt() {
     cout << "\t\t\t\t\t===  Do you want to save or do something else? ===\n" <<
          "(S) to save, (D) to do something else, [write name of output file to quick save!]\n->";
@@ -930,7 +928,7 @@ void continuePrompt() {
     (isRGB) ? writeRGBBMP(outputFileName, RGBImage) :
     writeGSBMP(outputFileName, image);
 }
-
+//main features of the project
 void displayFeatures() {
     cout << "\t\t\t\t\tzepto-\n"
             "\ta combining form (denoting a factor of 10) meaning 'one sextillionth'\n"
@@ -948,7 +946,15 @@ void displayFeatures() {
             "\t   As assignment for Dr.Mohamed Elramly FCAI-CU\n";
 
 }
-
+void skew(){
+    if(isRGB){
+        cout<<"Ana skewed";
+    }
+    else{
+        cout<<"Ana kman bs GS";
+    }
+}
+//start point of the project
 void userChoice() {
     cout << "\t\t\t\t\t=== Please choose what you wanna do ===\n" <<
          "- 1. Black and white filter\n" << //done
@@ -977,7 +983,7 @@ void userChoice() {
             controlBrightness, rotationPrompt,
             detectEdges, enlarge, shrink, mirror,
             addFrame, displayAveragePixelContrast,
-            shuffle, blur, crop, nullptr, displayFeatures, saveImage
+            shuffle, blur, crop, skew, displayFeatures, saveImage
     };
     usc choiceNumber;
     startUserChoiceLabel:
@@ -993,4 +999,3 @@ void userChoice() {
     }
     continuePrompt();
 }
-
