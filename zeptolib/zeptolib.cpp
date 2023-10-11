@@ -2,7 +2,7 @@
 // Ghassan Elgendy 20220239     E-Mail: Ghassanelgendyy@gmail.com
 // Rowan Ammar     20220133     E-Mail: rawanehab523@gmail.com
 // Jana Mohamed    20220470     E-Mail: janamohamedramadan335@gmail.com
-// 3/10/2023// 
+// 3/10/2023//
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -31,16 +31,9 @@ usc rotated[SIZE][SIZE];
 usc rotatedRGB[SIZE][SIZE][RGB];
 
 // initializing the average contrast for each pixel
-int avg = 127;
+unsigned int avg = 127;
 
-int imageSize = 0;
-
-void imageInfo() {
-    cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale")
-         << "\nimage average contrast: " << avg
-         << "\nfile size: " << imageSize / 1024
-         << "KB\n\t\t\t\t\t  === Have fun and get creative! ===\n\n";
-}
+unsigned int imageSize = 0;
 
 void detectColorMode(const string &filename) {
     FILE *p_file;
@@ -53,10 +46,9 @@ void detectColorMode(const string &filename) {
         isRGB = true;
     else
         isRGB = false;
-
 }
 
-void loadImage(unsigned char img[SIZE][SIZE], unsigned char RGBImg[SIZE][SIZE][RGB]) {
+void loadImage(usc img[SIZE][SIZE], usc RGBImg[SIZE][SIZE][RGB]) {
 
     char imageFileName[100];
     //  Get image file name
@@ -72,6 +64,175 @@ void loadImage(unsigned char img[SIZE][SIZE], unsigned char RGBImg[SIZE][SIZE][R
     }
     cout << '\n';
 
+}
+
+void burnEffect(usc newImg[SIZE][SIZE], usc newRGBImg[SIZE][SIZE][RGB]) {
+    if (isRGB) {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j)
+                for (usn k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = newRGBImg[i][j][k];
+                }
+        }
+    } else {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j)
+                image[i][j] = newImg[i][j];
+        }
+    }
+}
+
+void blackAndWhite() {
+    if (isRGB) {
+        for (auto &i: RGBImage) {
+            for (usn j = 0; j < SIZE; ++j) {
+                usc grayscale = (i[j][0] + i[j][1] + i[j][2]) / 3;
+                //  Set R, G, and B to the grayscale value
+                for (usn k = 0; k < RGB; ++k) {
+                    i[j][k] = grayscale;
+                }
+            }
+        }
+    } else {
+        for (auto &i: image) {
+            for (usc &j: i) {
+                (j > avg) ? j = 255 : j = 0;
+            }
+        }
+    }
+}
+
+void invert() {
+    if (isRGB) {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                for (usn k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = 255 - RGBImage[i][j][k];
+                }
+            }
+        }
+    } else {
+        for (auto &i: image) {
+            for (usc &j: i) {
+                j = 255 - j;
+            }
+        }
+    }
+}
+
+void merge() {
+    cout << "Load the second image, ";
+    usc secImage[SIZE][SIZE];
+    usc secRGBImage[SIZE][SIZE][RGB];
+    loadImage(secImage, secRGBImage);
+    if (isRGB) {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                for (usn k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = (RGBImage[i][j][k] + secRGBImage[i][j][k]) / 2;
+                }
+            }
+        }
+    } else {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                image[i][j] = (image[i][j] + secImage[i][j]) / 2;
+            }
+        }
+    }
+}
+
+void flip() {
+    cout << "(V) to flip vertically, (H) to flip horizontally\n";
+    usc flipped[SIZE][SIZE];
+    usc flippedRGB[SIZE][SIZE][RGB];
+    char x;
+    cin >> x;
+    if (isRGB) {
+        if (x == 'v' || x == 'V') {
+            for (usn i = 0; i < SIZE; ++i) {
+                for (usn j = 0; j < SIZE; ++j) {
+                    for (usn k = 0; k < RGB; ++k)
+                        flippedRGB[i][j][k] = RGBImage[SIZE - 1 - i][j][k];
+                }
+            }
+        } else {
+            for (usn i = 0; i < SIZE; ++i) {
+                for (usn j = 0; j < SIZE; ++j) {
+                    for (usn k = 0; k < RGB; ++k)
+                        flippedRGB[i][j][k] = RGBImage[i][SIZE - 1 - j][k];
+                }
+            }
+        }
+    } else {
+        if (x == 'v' || x == 'V') {
+            for (usn i = 0; i < SIZE; ++i) {
+                for (usn j = 0; j < SIZE; ++j) {
+                    flipped[i][j] = image[SIZE - 1 - i][j];
+                }
+            }
+        } else {
+            for (usn i = 0; i < SIZE; ++i) {
+                for (usn j = 0; j < SIZE; ++j) {
+                    flipped[i][j] = image[i][SIZE - 1 - j];
+                }
+            }
+        }
+    }
+    burnEffect(flipped, flippedRGB);
+}
+// controlling image brightness
+void brighten() {
+    if (isRGB) {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                for (usn k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = (RGBImage[i][j][k] + 255) / 2;
+
+                }
+            }
+        }
+    } else {
+        for (auto &i: image) {
+            for (usc &j: i) {
+                j = (j + 255) / 2;
+            }
+        }
+    }
+
+}
+
+void darken() {
+    if (isRGB) {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                for (usn k = 0; k < RGB; ++k) {
+                    RGBImage[i][j][k] = (RGBImage[i][j][k]) /= 2;
+
+                }
+            }
+        }
+    } else {
+        for (auto &i: image) {
+            for (usc &j: i) {
+                j /= 2;
+            }
+        }
+    }
+}
+
+void controlBrightness() {
+    cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
+    usc c;
+    cin >> c;
+    (c == ('b' | 'B')) ? brighten() : darken();
+}
+
+void imageInfo() {
+    cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale")
+         << "\nimage average contrast: " << avg
+         << "\nfile size: " << imageSize / 1024
+         << "KB\n\t\t\t\t\t  === Have fun and get creative! ===\n\n";
 }
 
 void saveImage() {
@@ -94,153 +255,48 @@ void saveImage() {
     cout << '\n';
 }
 
-
-void burnEffect(unsigned char newImg[SIZE][SIZE], unsigned char newRGBImg[SIZE][SIZE][RGB]) {
-    if (isRGB) {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j)
-                for (int k = 0; k < RGB; ++k) {
-                    RGBImage[i][j][k] = newRGBImg[i][j][k];
-                }
-        }
-    } else {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j)
-                image[i][j] = newImg[i][j];
-        }
-    }
-}
-
-
 void rotate(short time) {
-    for (int k = 0; k < time; ++k) {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                rotated[i][j] = image[j][SIZE - 1 - i];
+    for (usn k = 0; k < time; ++k) {
+        if (isRGB) {
+            {
+                for (usn i = 0; i < SIZE; ++i) {
+                    for (usn j = 0; j < SIZE; ++j) {
+                        for (usn l = 0; l < RGB; ++l) {
+                            rotatedRGB[i][j][l] = RGBImage[j][SIZE - 1 - i][l];
+                        }
+                    }
+                }
+                burnEffect(rotated, rotatedRGB);
+            }
+        } else {
+            for (usn i = 0; i < SIZE; ++i) {
+                for (usn j = 0; j < SIZE; ++j) {
+                    rotated[i][j] = image[j][SIZE - 1 - i];
+                }
+                burnEffect(rotated, rotatedRGB);
             }
         }
-        burnEffect(rotated, rotatedRGB);
     }
 }
 
-void getAverage(int &average) {
-    int sum = 0;
+void getAverage(unsigned int &average) {
+    unsigned int sum = 0;
     if (isRGB) {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                unsigned char grayscale = (RGBImage[i][j][0] + RGBImage[i][j][1] + RGBImage[i][j][2]) / 3;
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                usc grayscale = (RGBImage[i][j][0] + RGBImage[i][j][1] + RGBImage[i][j][2]) / 3;
                 sum += grayscale;
             }
         }
         average = sum / (SIZE * SIZE);
     } else {
         for (auto &i: image) {
-            for (unsigned char &j: i) {
+            for (usc &j: i) {
                 sum += j;
             }
         }
         average = sum / (SIZE * SIZE);
     }
-}
-
-void invert() {
-    if (isRGB) {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                for (int k = 0; k < RGB; ++k) {
-                    RGBImage[i][j][k] = 255 - RGBImage[i][j][k];
-                }
-            }
-        }
-    } else {
-        for (auto &i: image) {
-            for (unsigned char &j: i) {
-                j = 255 - j;
-            }
-        }
-    }
-}
-
-void blackAndWhite() {
-    if (isRGB) {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                unsigned char grayscale = (RGBImage[i][j][0] + RGBImage[i][j][1] + RGBImage[i][j][2]) / 3;
-                //  Set R, G, and B to the grayscale value
-                for (int k = 0; k < RGB; ++k) {
-                    RGBImage[i][j][k] = grayscale;
-                }
-            }
-        }
-    } else {
-        for (auto &i: image) {
-            for (unsigned char &j: i) {
-                (j > avg) ? j = 255 : j = 0;
-            }
-        }
-    }
-}
-
-void merge() {
-    cout << "Load the second image, ";
-    unsigned char secImage[SIZE][SIZE];
-    unsigned char secRGBImage[SIZE][SIZE][RGB];
-    loadImage(secImage, secRGBImage);
-    if (isRGB) {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                for (int k = 0; k < RGB; ++k) {
-                    RGBImage[i][j][k] = (RGBImage[i][j][k] + secRGBImage[i][j][k]) / 2;
-                }
-            }
-        }
-    } else {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                image[i][j] = (image[i][j] + secImage[i][j]) / 2;
-            }
-        }
-    }
-}
-
-void flip() {
-    cout << "(V) to flip vertically, (H) to flip horizontally\n";
-    unsigned char flipped[SIZE][SIZE];
-    unsigned char flippedRGB[SIZE][SIZE][RGB];
-    char x;
-    cin >> x;
-    if (isRGB) {
-        if (x == 'v' || x == 'V') {
-            for (int i = 0; i < SIZE; ++i) {
-                for (int j = 0; j < SIZE; ++j) {
-                    for (int k = 0; k < RGB; ++k)
-                        flippedRGB[i][j][k] = RGBImage[SIZE - 1 - i][j][k];
-                }
-            }
-        } else {
-            for (int i = 0; i < SIZE; ++i) {
-                for (int j = 0; j < SIZE; ++j) {
-                    for (int k = 0; k < RGB; ++k)
-                        flippedRGB[i][j][k] = RGBImage[i][SIZE - 1 - j][k];
-                }
-            }
-        }
-    } else {
-        if (x == 'v' || x == 'V') {
-            for (int i = 0; i < SIZE; ++i) {
-                for (int j = 0; j < SIZE; ++j) {
-                    flipped[i][j] = image[SIZE - 1 - i][j];
-                }
-            }
-        } else {
-            for (int i = 0; i < SIZE; ++i) {
-                for (int j = 0; j < SIZE; ++j) {
-                    flipped[i][j] = image[i][SIZE - 1 - j];
-                }
-            }
-        }
-    }
-    burnEffect(flipped, flippedRGB);
 }
 
 void rotationPrompt() {
@@ -253,45 +309,18 @@ void rotationPrompt() {
     rotate(x);
 }
 
-void brighten() {
-    if (isRGB) {
-        for (int i = 0; i <SIZE; ++i) {
-            for (int j = 0; j <SIZE; ++j) {
-                for (int k = 0; k < RGB; ++k) {
-                    RGBImage[i][j][k] = (RGBImage[i][j][k] + 255) / 2;
-
-                }
-            }
-        }
-    }
-    else{
-        for (auto &i: image) {
-            for (unsigned char &j: i) {
-                j = (j + 255) / 2;
-            }
-        }
-    }
-
-}
-
-void darken() {
-    for (auto &i: image) {
-        for (unsigned char &j: i) {
-            j /= 2;
-        }
-    }
-}
-
-void controlBrightness() {
-    cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
-    unsigned char c;
-    cin >> c;
-    (c == ('b' | 'B')) ? brighten() : darken();
-}
-
 void detectEdges() {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
+    if (isRGB) {
+        blackAndWhite();
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                image[i][j] = RGBImage[i][j][2];
+            }
+        }
+    }
+    isRGB = false;
+    for (usn i = 0; i < SIZE; i++) {
+        for (usn j = 0; j < SIZE; j++) {
             if (image[i][j] >= avg) {
                 if (image[i + 1][j] < avg
                     || image[i][j + 1] < avg) {
@@ -313,11 +342,24 @@ void detectEdges() {
 
 void addFrame() {
     unsigned short clr = 255;
-    if (avg > 128) clr = 0;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if (i <= 5 || j <= 5 || i > 250 || j > 250) {
-                image[i][j] = clr;
+    if (isRGB) {
+        if (avg > 128) clr = 0;
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                if (i <= 5 || j <= 5 || i > 250 || j > 250) {
+                    for (usn k = 0; k < RGB; ++k) {
+                        RGBImage[i][j][k] = clr;
+                    }
+                }
+            }
+        }
+    } else {
+        if (avg > 128) clr = 0;
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                if (i <= 5 || j <= 5 || i > 250 || j > 250) {
+                    image[i][j] = clr;
+                }
             }
         }
     }
@@ -325,72 +367,138 @@ void addFrame() {
 
 void enlarge() {
     unsigned short x;
-    unsigned char enlarged[SIZE][SIZE];
+    usc enlarged[SIZE][SIZE];
+    usc enlargedRGB[SIZE][SIZE][RGB];
 
     cout << "Which quarter do you want to enlarge?\n";
     cin >> x;
-    switch (x) {
-        // first quad
-        case (1):
-            for (int i = 0; i < 128; ++i) {
-                for (int j = 0; j < 128; ++j) {
-                    for (int k = 0; k < 2; ++k) {
-                        for (int l = 0; l < 2; ++l) {
-                            enlarged[i * 2 + k][j * 2 + l] = image[i][j];
+    if (isRGB) {
+        switch (x) {
+            // first quad
+            case (1):
+                for (usn i = 0; i < 128; ++i) {
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                for (usn m = 0; m < RGB; ++m) {
+                                    enlargedRGB[i * 2 + k][j * 2 + l][m] = RGBImage[i][j][m];
+                                }
+                            }
                         }
                     }
                 }
-            }
-            br
-            // second quad
-        case (2):
-            for (int i = 0; i < 128; ++i) {
-                for (int j = 128; j < SIZE; ++j) {
-                    for (int k = 0; k < 2; ++k) {
-                        for (int l = 0; l < 2; ++l) {
-                            enlarged[i * 2 + k][(j - 128) * 2 + l] = image[i][j];
+                br
+                // second quad
+            case (2):
+                for (usn i = 0; i < 128; ++i) {
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                for (usn m = 0; m < RGB; ++m) {
+                                    enlargedRGB[i * 2 + k][(j - 128) * 2 + l][m] = RGBImage[i][j][m];
+
+                                }
+                            }
                         }
                     }
                 }
-            }
-            br
-            // third quad
-        case (3):
-            for (int i = 128; i < SIZE; ++i) {
-                for (int j = 0; j < 128; ++j) {
-                    for (int k = 0; k < 2; ++k) {
-                        for (int l = 0; l < 2; ++l) {
-                            enlarged[(i - 128) * 2 + k][j * 2 + l] = image[i][j];
+                br
+                // third quad
+            case (3):
+                for (usn i = 128; i < SIZE; ++i) {
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                for (usn m = 0; m < RGB; ++m) {
+                                    enlargedRGB[(i - 128) * 2 + k][j * 2 + l][m] = RGBImage[i][j][m];
+                                }
+
+                            }
                         }
                     }
                 }
-            }
-            br
-            // fourth quad
-        case (4):
-            for (int i = 128; i < SIZE; ++i) {
-                for (int j = 128; j < SIZE; ++j) {
-                    for (int k = 0; k < 2; ++k) {
-                        for (int l = 0; l < 2; ++l) {
-                            enlarged[(i - 128) * 2 + k][(j - 128) * 2 + l] = image[i][j];
+                br
+                // fourth quad
+            case (4):
+                for (usn i = 128; i < SIZE; ++i) {
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                for (usn m = 0; m < RGB; ++m) {
+                                    enlargedRGB[(i - 128) * 2 + k][(j - 128) * 2 + l][m] = RGBImage[i][j][m];
+                                }
+                            }
                         }
                     }
                 }
-            }
-            br
-        default:
-            br
+                br
+            default:
+                br
+        }
+    } else {
+        switch (x) {
+            // first quad
+            case (1):
+                for (usn i = 0; i < 128; ++i) {
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                enlarged[i * 2 + k][j * 2 + l] = image[i][j];
+                            }
+                        }
+                    }
+                }
+                br
+                // second quad
+            case (2):
+                for (usn i = 0; i < 128; ++i) {
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                enlarged[i * 2 + k][(j - 128) * 2 + l] = image[i][j];
+                            }
+                        }
+                    }
+                }
+                br
+                // third quad
+            case (3):
+                for (usn i = 128; i < SIZE; ++i) {
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                enlarged[(i - 128) * 2 + k][j * 2 + l] = image[i][j];
+                            }
+                        }
+                    }
+                }
+                br
+                // fourth quad
+            case (4):
+                for (usn i = 128; i < SIZE; ++i) {
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 0; k < 2; ++k) {
+                            for (usn l = 0; l < 2; ++l) {
+                                enlarged[(i - 128) * 2 + k][(j - 128) * 2 + l] = image[i][j];
+                            }
+                        }
+                    }
+                }
+                br
+            default:
+                br
+        }
     }
-/*
-    burnEffect(enlarged);
-*/
+    burnEffect(enlarged, enlargedRGB);
+
 }
 
 void shrink() {
     startShrinkLabel:
     unsigned short scale;
     // declaring new image after apply
-    unsigned char shrunk[SIZE][SIZE];
+    usc shrunk[SIZE][SIZE];
+    usc shrunkRGB[SIZE][SIZE][RGB];
     cout << "At what scale?\n" <<
          "1. 1/2\n2. 1/3\n3. 1/4\n";
     cin >> scale;
@@ -398,15 +506,26 @@ void shrink() {
         cout << "Please i'm not a magician, choose a valid number.\n";
         goto startShrinkLabel;
     } else {
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                shrunk[i][j] = 255;
-                shrunk[i / (scale + 1)][j / (scale + 1)] = image[i][j];
+        if (isRGB) {
+            for (usn i = 0; i < SIZE; ++i) {
+                for (usn j = 0; j < SIZE; ++j) {
+                    for (int k = 0; k < RGB; ++k) {
+                        shrunkRGB[i][j][k] = 255;
+                        shrunkRGB[i / (scale + 1)][j / (scale + 1)][k] = RGBImage[i][j][k];
+                    }
+
+                }
+            }
+        } else {
+            for (usn i = 0; i < SIZE; ++i) {
+                for (usn j = 0; j < SIZE; ++j) {
+                    shrunk[i][j] = 255;
+                    shrunk[i / (scale + 1)][j / (scale + 1)] = image[i][j];
+                }
             }
         }
-/*
-        burnEffect(shrunk);
-*/
+
+        burnEffect(shrunk, shrunkRGB);
     }
 }
 
@@ -415,185 +534,370 @@ void mirror() {
     cout << "1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
     unsigned short option;
     cin >> option;
-    switch (option) {
-        case (1):
-            for (auto &i: image) {
-                for (int j = 0; j < SIZE / 2; ++j) {
-                    i[j + 128] = i[127 - j];
-                }
-            }
-            br
-        case (2):
-            for (auto &i: image) {
-                for (int j = 0; j < SIZE / 2; ++j) {
-                    i[127 - j] = i[j + 128];
-                }
-            }
-            br
-        case (3):
-            for (int i = 0; i < SIZE / 2; ++i) {
-                for (int j = 0; j < SIZE; ++j) {
-                    image[i + 128][j] = image[127 - i][j];
-                }
-            }
-            br
-        case (4):
-            for (int i = 0; i < SIZE / 2; ++i) {
-                for (int j = 0; j < SIZE; ++j) {
-                    image[127 - i][j] = image[i + 128][j];
-                }
-            }
-            br
-        default:
-            cout << errorMsg;
-            goto startMirrorLabel;
-            br
-    }
-}
-
-void shuffle() {
-    unsigned char shuffled[SIZE][SIZE];
-    int quarter = 1;
-    cout << "what order of quarters? \n";
-    int order[4];
-    for (int &i: order) {
-        cin >> i;
-    }
-    for (int i: order) {
-        switch (quarter) {
+    if (isRGB) {
+        switch (option) {
             case (1):
-                for (int j = 0; j < 128; ++j) {
-                    for (int k = 0; k < 128; ++k) {
-                        switch (i) {
-                            case (1):
-                                shuffled[j][k] = image[j][k];
-                                br
-                            case (2):
-                                shuffled[j][k] = image[j][k + 128];
-
-                                br
-                            case (3):
-                                shuffled[j][k] = image[j + 128][k];
-                                br
-                            case (4):
-                                shuffled[j][k] = image[j + 128][k + 128];
-                                br
-                            default:
-                                cout << errorMsg;
+                for (auto &i: RGBImage) {
+                    for (usn j = 0; j < SIZE / 2; ++j) {
+                        for (int k = 0; k < RGB; ++k) {
+                            i[j + 128][k] = i[127 - j][k];
                         }
                     }
                 }
                 br
-
             case (2):
-                for (int j = 0; j < 128; ++j) {
-                    for (int k = 128; k < SIZE; ++k) {
-                        switch (i) {
-                            case (1):
-                                shuffled[j][k] = image[j][k - 128];
-                                br
-                            case (2):
-                                shuffled[j][k] = image[j][k];
-                                br
-                            case (3):
-                                shuffled[j][k] = image[j + 128][k - 128];
-                                br
-                            case (4):
-                                shuffled[j][k] = image[j + 128][k];
-                                br
-                            default:
-                                cout << errorMsg;
+                for (auto &i: RGBImage) {
+                    for (usn j = 0; j < SIZE / 2; ++j) {
+                        for (int k = 0; k < RGB; ++k) {
+                            i[127 - j][k] = i[j + 128][k];
                         }
                     }
                 }
-
                 br
-
             case (3):
-                for (int j = 128; j < SIZE; ++j) {
-                    for (int k = 0; k < 128; ++k) {
-                        switch (i) {
-                            case (1):
-                                shuffled[j][k] = image[j - 128][k];
-                                br
-                            case (2):
-                                shuffled[j][k] = image[j - 128][k + 128];
-                                br
-                            case (3):
-                                shuffled[j][k] = image[j][k];
-                                br
-                            case (4):
-                                shuffled[j][k] = image[j][k + 128];
-                                br
-                            default:
-                                cout << errorMsg;
-
+                for (usn i = 0; i < SIZE / 2; ++i) {
+                    for (usn j = 0; j < SIZE; ++j) {
+                        for (int k = 0; k < RGB; ++k) {
+                            RGBImage[i + 128][j][k] = RGBImage[127 - i][j][k];
                         }
                     }
                 }
                 br
-
             case (4):
-                for (int j = 128; j < SIZE; ++j) {
-                    for (int k = 128; k < SIZE; ++k) {
-                        switch (i) {
-                            case (1):
-                                shuffled[j][k] = image[j - 128][k - 128];
-                                br
-                            case (2):
-                                shuffled[j][k] = image[j - 128][k];
-                                br
-                            case (3):
-                                shuffled[j][k] = image[j][k - 128];
-                                br
-                            case (4):
-                                shuffled[j][k] = image[j][k];
-                                br
-                            default:
-                                cout << errorMsg;
+                for (usn i = 0; i < SIZE / 2; ++i) {
+                    for (usn j = 0; j < SIZE; ++j) {
+                        for (int k = 0; k < RGB; ++k) {
+                            RGBImage[127 - i][j][k] = RGBImage[i + 128][j][k];
                         }
                     }
                 }
                 br
             default:
+                cout << errorMsg;
+                goto startMirrorLabel;
                 br
         }
-        quarter++;
+    } else {
+        switch (option) {
+            case (1):
+                for (auto &i: image) {
+                    for (usn j = 0; j < SIZE / 2; ++j) {
+                        i[j + 128] = i[127 - j];
+                    }
+                }
+                br
+            case (2):
+                for (auto &i: image) {
+                    for (usn j = 0; j < SIZE / 2; ++j) {
+                        i[127 - j] = i[j + 128];
+                    }
+                }
+                br
+            case (3):
+                for (usn i = 0; i < SIZE / 2; ++i) {
+                    for (usn j = 0; j < SIZE; ++j) {
+                        image[i + 128][j] = image[127 - i][j];
+                    }
+                }
+                br
+            case (4):
+                for (usn i = 0; i < SIZE / 2; ++i) {
+                    for (usn j = 0; j < SIZE; ++j) {
+                        image[127 - i][j] = image[i + 128][j];
+                    }
+                }
+                br
+            default:
+                cout << errorMsg;
+                goto startMirrorLabel;
+                br
+        }
     }
-/*
-    burnEffect(shuffled);
-*/
+}
+
+void shuffle() {
+    startShuffleLabel:
+    usc shuffled[SIZE][SIZE];
+    usc shuffledRGB[SIZE][SIZE][RGB];
+    usn quarter = 1;
+    cout << "what order of quarters? \n";
+    usn order[4];
+    for (usn &i: order) {
+        cin >> i;
+    }
+    if (isRGB) {
+        for (usn i: order) {
+            switch (quarter) {
+                case (1):
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 0; k < 128; ++k)
+                            for (usn g = 0; g < RGB; g++) {
+                                switch (i) {
+                                    case (1):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k][g];
+                                        br
+                                    case (2):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k + 128][g];
+
+                                        br
+                                    case (3):
+                                        shuffledRGB[j][k][g] = RGBImage[j + 128][k][g];
+                                        br
+                                    case (4):
+                                        shuffledRGB[j][k][g] = RGBImage[j + 128][k + 128][g];
+                                        br
+                                    default:
+                                        cout << errorMsg;
+                                }
+                            }
+                    }
+                    br
+
+                case (2):
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 128; k < SIZE; ++k)
+                            for (usn g = 0; g < RGB; g++) {
+                                switch (i) {
+                                    case (1):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k - 128][g];
+                                        br
+                                    case (2):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k][g];
+                                        br
+                                    case (3):
+                                        shuffledRGB[j][k][g] = RGBImage[j + 128][k - 128][g];
+                                        br
+                                    case (4):
+                                        shuffledRGB[j][k][g] = RGBImage[j + 128][k][g];
+                                        br
+                                    default:
+                                        cout << errorMsg;
+                                }
+                            }
+                    }
+
+                    br
+
+                case (3):
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 0; k < 128; ++k)
+                            for (usn g = 0; g < RGB; g++) {
+                                switch (i) {
+                                    case (1):
+                                        shuffledRGB[j][k][g] = RGBImage[j - 128][k][g];
+                                        br
+                                    case (2):
+                                        shuffledRGB[j][k][g] = RGBImage[j - 128][k + 128][g];
+                                        br
+                                    case (3):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k][g];
+                                        br
+                                    case (4):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k + 128][g];
+                                        br
+                                    default:
+                                        cout << errorMsg;
+
+                                }
+                            }
+                    }
+                    br
+
+                case (4):
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 128; k < SIZE; ++k)
+                            for (usn g = 0; g < RGB; g++) {
+                                switch (i) {
+                                    case (1):
+                                        shuffledRGB[j][k][g] = RGBImage[j - 128][k - 128][g];
+                                        br
+                                    case (2):
+                                        shuffledRGB[j][k][g] = RGBImage[j - 128][k][g];
+                                        br
+                                    case (3):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k - 128][g];
+                                        br
+                                    case (4):
+                                        shuffledRGB[j][k][g] = RGBImage[j][k][g];
+                                        br
+                                    default:
+                                        cout << errorMsg;
+                                }
+                            }
+                    }
+                    br
+                default:
+                    goto startShuffleLabel;
+                    br
+            }
+            quarter++;
+        }
+    } else {
+        for (usn i: order) {
+            switch (quarter) {
+                case (1):
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 0; k < 128; ++k) {
+                            switch (i) {
+                                case (1):
+                                    shuffled[j][k] = image[j][k];
+                                    br
+                                case (2):
+                                    shuffled[j][k] = image[j][k + 128];
+
+                                    br
+                                case (3):
+                                    shuffled[j][k] = image[j + 128][k];
+                                    br
+                                case (4):
+                                    shuffled[j][k] = image[j + 128][k + 128];
+                                    br
+                                default:
+                                    cout << errorMsg;
+                            }
+                        }
+                    }
+                    br
+
+                case (2):
+                    for (usn j = 0; j < 128; ++j) {
+                        for (usn k = 128; k < SIZE; ++k) {
+                            switch (i) {
+                                case (1):
+                                    shuffled[j][k] = image[j][k - 128];
+                                    br
+                                case (2):
+                                    shuffled[j][k] = image[j][k];
+                                    br
+                                case (3):
+                                    shuffled[j][k] = image[j + 128][k - 128];
+                                    br
+                                case (4):
+                                    shuffled[j][k] = image[j + 128][k];
+                                    br
+                                default:
+                                    cout << errorMsg;
+                            }
+                        }
+                    }
+
+                    br
+
+                case (3):
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 0; k < 128; ++k) {
+                            switch (i) {
+                                case (1):
+                                    shuffled[j][k] = image[j - 128][k];
+                                    br
+                                case (2):
+                                    shuffled[j][k] = image[j - 128][k + 128];
+                                    br
+                                case (3):
+                                    shuffled[j][k] = image[j][k];
+                                    br
+                                case (4):
+                                    shuffled[j][k] = image[j][k + 128];
+                                    br
+                                default:
+                                    cout << errorMsg;
+
+                            }
+                        }
+                    }
+                    br
+
+                case (4):
+                    for (usn j = 128; j < SIZE; ++j) {
+                        for (usn k = 128; k < SIZE; ++k) {
+                            switch (i) {
+                                case (1):
+                                    shuffled[j][k] = image[j - 128][k - 128];
+                                    br
+                                case (2):
+                                    shuffled[j][k] = image[j - 128][k];
+                                    br
+                                case (3):
+                                    shuffled[j][k] = image[j][k - 128];
+                                    br
+                                case (4):
+                                    shuffled[j][k] = image[j][k];
+                                    br
+                                default:
+                                    cout << errorMsg;
+                            }
+                        }
+                    }
+                    br
+                default:
+                    goto startShuffleLabel;
+                    br
+            }
+            quarter++;
+        }
+    }
+
+    burnEffect(shuffled, shuffledRGB);
 }
 
 void blur() {
-    unsigned char blurred[SIZE][SIZE];
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            blurred[i][j] = (image[i][j] +
-                             image[i + 1][j] + image[i][j + 1] + image[i - 1][j] + image[i][j - 1] +
-                             image[i + 2][j] + image[i][j + 2] + image[i - 2][j] + image[i][j - 2] +
-                             image[i + 3][j] + image[i][j + 3] + image[i - 3][j] + image[i][j - 3] +
-                             image[i + 4][j] + image[i][j + 4] + image[i - 4][j] +
-                             image[i + 5][j] + image[i][j + 5] + image[i - 5][j]) / 25;
+    usc blurred[SIZE][SIZE];
+    usc blurredRGB[SIZE][SIZE][RGB];
+    if (isRGB) {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                for (usn k = 0; k < RGB; ++k) {
+                    blurredRGB[i][j][k] = (RGBImage[i][j][k] +
+                                           RGBImage[i + 1][j][k] + RGBImage[i][j + 1][k] + RGBImage[i - 1][j][k] +
+                                           RGBImage[i][j - 1][k] +
+                                           RGBImage[i + 2][j][k] + RGBImage[i][j + 2][k] + RGBImage[i - 2][j][k] +
+                                           RGBImage[i][j - 2][k] +
+                                           RGBImage[i + 3][j][k] + RGBImage[i][j + 3][k] + RGBImage[i - 3][j][k] +
+                                           RGBImage[i][j - 3][k] +
+                                           RGBImage[i + 4][j][k] + RGBImage[i][j + 4][k] + RGBImage[i - 4][j][k] +
+                                           RGBImage[i + 5][j][k] + RGBImage[i][j + 5][k] + RGBImage[i - 5][j][k]) / 25;
+                }
+            }
+        }
+    } else {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                blurred[i][j] = (image[i][j] +
+                                 image[i + 1][j] + image[i][j + 1] + image[i - 1][j] + image[i][j - 1] +
+                                 image[i + 2][j] + image[i][j + 2] + image[i - 2][j] + image[i][j - 2] +
+                                 image[i + 3][j] + image[i][j + 3] + image[i - 3][j] + image[i][j - 3] +
+                                 image[i + 4][j] + image[i][j + 4] + image[i - 4][j] +
+                                 image[i + 5][j] + image[i][j + 5] + image[i - 5][j]) / 25;
 
+            }
         }
     }
-/*
-    burnEffect(blurred);
-*/
+
+    burnEffect(blurred, blurredRGB);
 }
 
 void crop() {
-    int x, y, l, w;
-    cout << "enter x y l w\n";
+    usn x, y, l, w;
+    cout << "Enter point on x-axis, y-axis , length and width\n";
     cin >> x >> y >> l >> w;
-
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if ((i < y || i > (y + l)) || (j < x || j > (w + x)))
-                image[i][j] = 255;
+    if (isRGB) {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                for (usn k = 0; k < RGB; ++k) {
+                    if ((i < y || i > (y + l)) || (j < x || j > (w + x)))
+                        RGBImage[i][j][k] = 255;
+                }
+            }
+        }
+    } else {
+        for (usn i = 0; i < SIZE; ++i) {
+            for (usn j = 0; j < SIZE; ++j) {
+                if ((i < y || i > (y + l)) || (j < x || j > (w + x)))
+                    image[i][j] = 255;
+            }
         }
     }
+
 }
 
 void displayAveragePixelContrast() {
@@ -602,15 +906,15 @@ void displayAveragePixelContrast() {
 
 void continuePrompt() {
     cout << "\t\t\t\t\t===  Do you want to save or do something else? ===\n" <<
-         "(S) to save, (D) to do something else\n";
-    char c;
-    cin >> c;
-    if (c == 'd' || c == 'D')
+         "(S) to save, (D) to do something else, [write name of output file to quick save!]\n->";
+    char outputFileName[50];
+    cin >> outputFileName;
+    if (outputFileName[0] == 'd' || outputFileName[0] == 'D')
         userChoice();
-    else if (c == 's' || c == 'S') {
+    else if (outputFileName[0] == 's' || outputFileName[0] == 'S') {
         saveImage();
         cout << "Do you have another image to process? Y/N\n";
-        unsigned char loop;
+        usc loop;
         cin >> loop;
         if (loop == 'y' || loop == 'Y') {
             loadImage(image, RGBImage);
@@ -622,38 +926,71 @@ void continuePrompt() {
             abort();
         }
     }
+    strcat(outputFileName, ".bmp");
+    (isRGB) ? writeRGBBMP(outputFileName, RGBImage) :
+    writeGSBMP(outputFileName, image);
+}
+
+void displayFeatures() {
+    cout << "\t\t\t\t\tzepto-\n"
+            "\ta combining form (denoting a factor of 10) meaning 'one sextillionth'\n"
+            "\t\t Basically it's photoshop but in zepto scale\n\n\n"
+            "Features -> "
+            "15 required filters + additional filters as follows\n"
+            "- Mode auto detection : detects image color more (RGB or grayscale) to apply the correct algorithm\n"
+            "- Smart frame: generates frame color depending on average image contrast.\n"
+            "- Error handling : keeps asking the user for valid input\n"
+            "- Quick save mode : takes user input as filename for quick save\n\n"
+            "\t\tThis amazing project was made possible by\n"
+            "\tGhassan Elgendy \t\tgithub: ghassanelgendy\n"
+            "\tRowan Ammar     \t\tgithub: rowanammar\n"
+            "\tJana Mohamed    \t\tgithub: janaramadan\n" //xDDD
+            "\t   As assignment for Dr.Mohamed Elramly FCAI-CU\n";
+
 }
 
 void userChoice() {
     cout << "\t\t\t\t\t=== Please choose what you wanna do ===\n" <<
-         "- 1. Black and white filter\n" <<
-         "- 2. Invert filter\n" <<
-         "- 3. Merge\n" <<
-         "- 4. Flip\n" <<
-         "- 5. Change brightness\n" <<
-         "- 6. Rotate\n" <<
-         "- 7. Detect edges\n" <<
-         "- 8. Enlarge\n" <<
-         "- 9. Shrink\n" <<
-         "- A. Mirror\n" <<
-         "- B. Add smart frame\n" <<
-         "- C. Get average pixels contrast (advanced)\n" <<
-         "- D. Shuffle\n" <<
-         "- E. Blur\n" <<
-         "- F. Crop\n" <<
-         "- S. Save image to a file\n" <<
-         "- 0. Exit :(\n"
+         "- 1. Black and white filter\n" << //done
+         "- 2. Invert filter\n" <<          //done
+         "- 3. Merge\n" <<                  //done
+         "- 4. Flip\n" <<                   //done
+         "- 5. Change brightness\n" <<      //done
+         "- 6. Rotate\n" <<                 //done
+         "- 7. Detect edges\n" <<           //done
+         "- 8. Enlarge\n" <<                //done
+         "- 9. Shrink\n" <<                 //done
+         "- A. Mirror\n" <<                 //done
+         "- B. Add smart frame\n" <<        //done
+         "- C. Get average pixels contrast (advanced)\n" << //done
+         "- D. Shuffle\n" <<                //done
+         "- E. Blur\n" <<                   //done
+         "- F. Crop\n" <<                   //done
+         "- G. Skew\n" <<                   //lol
+         "- H. Help & tutorials\n" <<       //done
+         "- I. Credits\n" <<                //done
+         "- J. Save image to a file\n" <<   //done
+         "- 0. Exit :(\n"                   //obv done
          "->";
-    std::vector<void (*)()> functionPointers = {
+    std::vector<void (*)()> funPointers = {
             abort, blackAndWhite, invert, merge, flip, // abort() terminates with code 3.
             controlBrightness, rotationPrompt,
             detectEdges, enlarge, shrink, mirror,
             addFrame, displayAveragePixelContrast,
-            shuffle, blur, crop, saveImage
+            shuffle, blur, crop, nullptr, displayFeatures, saveImage
     };
-    unsigned char choice;
-    cin >> choice;
-    unsigned short choiceNumber = choice;
-    (choiceNumber >= 97) ? functionPointers[choiceNumber - 87]() : functionPointers[choiceNumber - 48]();
+    usc choiceNumber;
+    startUserChoiceLabel:
+    cin >> choiceNumber;
+    usn choice = tolower(choiceNumber);
+    if (choice >= '0' && choice <= '9' || choice >= 'a' && choice <= 'j') {
+        (choice >= 97) ?
+        funPointers[choice - 87]() : // handle the letters
+        funPointers[choice - 48]();  // handle the numbers
+    } else {
+        cout << "Please, choose a valid option!\n";
+        goto startUserChoiceLabel;
+    }
     continuePrompt();
 }
+
