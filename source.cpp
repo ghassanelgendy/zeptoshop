@@ -330,6 +330,7 @@ void flip() {
         cout << "please enter a valid input.\n";
         goto start;
     }
+    //copies flipped to the variable image
     burnEffect(flipped);
 }
 
@@ -675,6 +676,7 @@ void shuffle() {
         }
         quarter++;
     }
+    //copies shuffled to image
     burnEffect(shuffled);
 }
 
@@ -690,6 +692,7 @@ void blur() {
             blurred[i][j] = sum / 25;
         }
     }
+    //copies blurred to image
     burnEffect(blurred);
 }
 
