@@ -52,7 +52,7 @@ This repository contains an assignment for the FCAI OOP Programming course in 20
 19. **Exit:** Close the application.
 
 ## Credits
-This project, a combining form (denoting a factor of 10) meaning 'one sextillionth,' essentially provides Photoshop-like features but on a zepto scale.
+This project essentially provides Photoshop-like features but on a zepto scale.
 
 This amazing project was made possible by:
 - Ghassan Elgendy
