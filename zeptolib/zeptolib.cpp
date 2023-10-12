@@ -973,9 +973,8 @@ void userChoice() {
          "- E. Blur\n" <<                   //done
          "- F. Crop\n" <<                   //done
          "- G. Skew\n" <<                   //lol
-         "- H. Help & tutorials\n" <<       //done
-         "- I. Credits\n" <<                //done
-         "- J. Save image to a file\n" <<   //done
+         "- H. Credits\n" <<                //done
+         "- I. Save image to a file\n" <<   //done
          "- 0. Exit :(\n"                   //obv done
          "->";
     std::vector<void (*)()> funPointers = {
