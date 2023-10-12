@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <cmath>
 #include "../bmplib.cpp"
 
 #define usn unsigned short
@@ -22,8 +23,10 @@ usc image[SIZE][SIZE];
 usc RGBImage[SIZE][SIZE][RGB];
 // boolean to catch logical errors
 bool isIssue = false;
+
 //prompt takes choice from user
 void userChoice();
+
 //boolean to decide what color mode is the image
 bool isRGB;
 // declaring the matrix for rotation
@@ -33,6 +36,7 @@ usc rotatedRGB[SIZE][SIZE][RGB];
 unsigned int avg = 127;
 //declaring filesize
 unsigned int imageSize = 0;
+
 void detectColorMode(const string &filename) {
     FILE *p_file;
     p_file = fopen(filename.c_str(), "rb");
@@ -45,6 +49,7 @@ void detectColorMode(const string &filename) {
     else
         isRGB = false;
 }
+
 //load image exists in same directory
 void loadImage(usc img[SIZE][SIZE], usc RGBImg[SIZE][SIZE][RGB]) {
 
@@ -63,6 +68,7 @@ void loadImage(usc img[SIZE][SIZE], usc RGBImg[SIZE][SIZE][RGB]) {
     cout << '\n';
 
 }
+
 //applies the picked filter to the global image[SIZE][SIZE] matrix
 void burnEffect(usc newImg[SIZE][SIZE], usc newRGBImg[SIZE][SIZE][RGB]) {
     if (isRGB) {
@@ -79,6 +85,7 @@ void burnEffect(usc newImg[SIZE][SIZE], usc newRGBImg[SIZE][SIZE][RGB]) {
         }
     }
 }
+
 //"black and white" filter
 void blackAndWhite() {
     if (isRGB) {
@@ -99,6 +106,7 @@ void blackAndWhite() {
         }
     }
 }
+
 //"invert" filter
 void invert() {
     if (isRGB) {
@@ -117,6 +125,7 @@ void invert() {
         }
     }
 }
+
 //merge two images
 void merge() {
     cout << "Load the second image, ";
@@ -139,6 +148,7 @@ void merge() {
         }
     }
 }
+
 //flip image in two axes
 void flip() {
     cout << "(V) to flip vertically, (H) to flip horizontally\n";
@@ -179,6 +189,7 @@ void flip() {
     }
     burnEffect(flipped, flippedRGB);
 }
+
 //increase image brightness by 50%
 void brighten() {
     if (isRGB) {
@@ -199,6 +210,7 @@ void brighten() {
     }
 
 }
+
 //decrease image brightness by 50%
 void darken() {
     if (isRGB) {
@@ -218,6 +230,7 @@ void darken() {
         }
     }
 }
+
 // controlling image brightness
 void controlBrightness() {
     cout << "Choose (B) to brighten the image by 50%, (D) to darken it by 50%\n";
@@ -225,6 +238,7 @@ void controlBrightness() {
     cin >> c;
     (c == ('b' | 'B')) ? brighten() : darken();
 }
+
 //displays image info
 void imageInfo() {
     cout << "\t\t\t\t\t\t  === Image info ===\ncolor mode: " << (isRGB ? "RGB" : "grayscale")
@@ -232,6 +246,7 @@ void imageInfo() {
          << "\nfile size: " << imageSize / 1024
          << "KB\n\t\t\t\t\t  === Have fun and get creative! ===\n\n";
 }
+
 //save image in same directory
 void saveImage() {
 
@@ -252,6 +267,7 @@ void saveImage() {
     }
     cout << '\n';
 }
+
 //rotates the image
 void rotate(short time) {
     for (usn k = 0; k < time; ++k) {
@@ -276,6 +292,7 @@ void rotate(short time) {
         }
     }
 }
+
 //function to generate average contrast for image
 void getAverage(unsigned int &average) {
     unsigned int sum = 0;
@@ -296,6 +313,7 @@ void getAverage(unsigned int &average) {
         average = sum / (SIZE * SIZE);
     }
 }
+
 //prompt user for rotation degree
 void rotationPrompt() {
     startRotateLabel:
@@ -306,6 +324,7 @@ void rotationPrompt() {
     if (x > 3) goto startRotateLabel;
     rotate(x);
 }
+
 //detect edges of an object
 void detectEdges() {
     if (isRGB) {
@@ -337,6 +356,7 @@ void detectEdges() {
         }
     }
 }
+
 //optional filter
 void addFrame() {
     unsigned short clr = 255;
@@ -362,6 +382,7 @@ void addFrame() {
         }
     }
 }
+
 //enlarge chosen quarter by scale 4x
 void enlarge() {
     unsigned short x;
@@ -490,6 +511,7 @@ void enlarge() {
     burnEffect(enlarged, enlargedRGB);
 
 }
+
 //shrink image by a desired scale
 void shrink() {
     startShrinkLabel:
@@ -526,6 +548,7 @@ void shrink() {
         burnEffect(shrunk, shrunkRGB);
     }
 }
+
 //mirrors chosen half of the imagw
 void mirror() {
     startMirrorLabel:
@@ -612,6 +635,7 @@ void mirror() {
         }
     }
 }
+
 //shuffles quarters of the image
 void shuffle() {
     startShuffleLabel:
@@ -837,6 +861,7 @@ void shuffle() {
 
     burnEffect(shuffled, shuffledRGB);
 }
+
 //blurs the image
 void blur() {
     usc blurred[SIZE][SIZE];
@@ -873,6 +898,7 @@ void blur() {
 
     burnEffect(blurred, blurredRGB);
 }
+
 //crops the image from desired point with desired dimensions
 void crop() {
     usn x, y, l, w;
@@ -897,10 +923,12 @@ void crop() {
     }
 
 }
+
 //displays the average contrast
 void displayAveragePixelContrast() {
     cout << "Average pixels contrast = " << avg << '\n';
 }
+
 //prompt user to continue editing or save
 void continuePrompt() {
     cout << "\t\t\t\t\t===  Do you want to save or do something else? ===\n" <<
@@ -928,6 +956,7 @@ void continuePrompt() {
     (isRGB) ? writeRGBBMP(outputFileName, RGBImage) :
     writeGSBMP(outputFileName, image);
 }
+
 //main features of the project
 void displayFeatures() {
     cout << "\t\t\t\t\tzepto-\n"
@@ -946,36 +975,154 @@ void displayFeatures() {
             "\t   As assignment for Dr.Mohamed Elramly FCAI-CU\n";
 
 }
-void skew(){
-    if(isRGB){
-        cout<<"Ana skewed";
+
+
+void skew() {
+    startSkew :
+    char choice;
+    cout << "(H) to skew Horizontally , (V) to skew Vertically\n";
+    cin >> choice;
+    usc skewed[SIZE][SIZE];
+    usc skewedRGB[SIZE][SIZE][RGB];
+    usn angle;
+    cout << "enter degree to skew\n";
+    cin >> angle;
+    float Rangle = (angle * 3.14) / 180; //converting angle to radian for cmath
+    float side = 256 * tan(Rangle); //side opposite to the angle
+    float scale = 256.0 / (256.0 - side); //scaling factor
+    float r = side / 256; //ratio of skewed side to the whole edge to determine how many pixels to move
+    float pixel = 0, moved = 0;
+    if (isRGB) {
+        for (int i = 0; i <SIZE; ++i) {
+            for (int j = 0; j <SIZE; ++j) {
+                for (int k = 0; k < RGB; ++k) {
+                    skewedRGB[i][j][k] = 255;
+                }
+            }
+        }
+        if (choice == 'v' || choice == 'V') {
+            for (int i = 0; i < 256; ++i) {
+                pixel = 0;
+                for (int j = side - moved; j < 256 - moved; ++j) {
+                    int avg[RGB] = {0};
+                    int curpixel = 0;
+                    for (int k = static_cast<int>(ceil(pixel - scale)); k < static_cast<int>(ceil(pixel + scale)); k++) {
+                        for (int c = 0; c < RGB; ++c) {
+                            if (k >= 0 && k < 256) { // check boundaries
+                                avg[c] += RGBImage[i][k][c];
+                            }
+                        }
+                        curpixel++;
+                    }
+                    for (int c = 0; c < RGB; ++c) {
+                        avg[c] /= max(1, curpixel);
+                        skewedRGB[i][j][c] = avg[c];
+                    }
+                    pixel += scale;
+                }
+                moved += r;
+            }
+        } else if (choice == 'h' || choice == 'H') {
+            for (int j = 0; j < 256; ++j) {
+                pixel = 0;
+                for (int i = side - moved; i < 256 - moved; ++i) {
+                    int avg[RGB] = {0};
+                    int curpixel = 0;
+                    for (int k = static_cast<int>(ceil(pixel - scale)); k < static_cast<int>(ceil(pixel + scale)); k++) {
+                        for (int c = 0; c < RGB; ++c) {
+                            if (k >= 0 && k < 256) { // check boundaries
+                                avg[c] += RGBImage[k][j][c];
+                            }
+                        }
+                        curpixel++;
+                    }
+                    for (int c = 0; c < RGB; ++c) {
+                        avg[c] /= max(1, curpixel);
+                        skewedRGB[i][j][c] = avg[c];
+                    }
+                    pixel += scale;
+                }
+                moved += r;
+            }
+        } else {
+            cout << "Please enter a valid input\n";
+            goto startSkew;
+        }
+    } else {
+        for (auto &i: skewed) {
+            for (unsigned char &j: i) {
+                j = 255;
+            }
+        }
+
+        if (choice == 'v' || choice == 'V') {
+            for (int i = 0; i < 256; ++i) {
+                pixel = 0;
+                for (int j = side - moved;
+                     j <
+                     256 - moved; ++j) { // to start iterating and copying pixels from the correct position in each row
+                    usn avg = 0; //calculates average to compress the pixels
+                    int curpixel = 0;
+                    for (int k = static_cast<int>(ceil(pixel - scale));
+                         k < static_cast<int>(ceil(pixel + scale)); k++) {
+                        //iterates over the pixels we want to add in each row with respect to scaling factor
+                        avg += image[i][k];
+                        curpixel++;
+                    }
+                    avg /= max(1, curpixel);//to avoid dividing by zero
+                    skewed[i][j] = avg;
+                    pixel += scale;//moves into the next group of pixels with respect to scaling factor
+                }
+                moved += r;//increased relative to r to give skewing effect
+            }
+        } else if (choice == 'h' || choice == 'H') {
+            for (int j = 0; j < 256; ++j) {
+                pixel = 0;
+                for (int i = side - moved; i < 256 - moved; ++i) {
+                    int avg = 0;
+                    int curpixel = 0;
+                    for (int k = static_cast<int>(ceil(pixel - scale));
+                         k < static_cast<int>(ceil(pixel + scale)); k++) {
+                        if (k >= 0 && k < 256) { // check boundaries
+                            avg += image[k][j];
+                            curpixel++;
+                        }
+                    }
+                    avg /= max(1, curpixel);
+                    skewed[i][j] = avg;
+                    pixel += scale;
+                }
+                moved += r;
+            }
+        } else {
+            cout << "Please enter a valid input\n";
+            goto startSkew;
+        }
     }
-    else{
-        cout<<"Ana kman bs GS";
-    }
+    burnEffect(skewed, skewedRGB);
 }
+
 //start point of the project
 void userChoice() {
     cout << "\t\t\t\t\t=== Please choose what you wanna do ===\n" <<
-         "- 1. Black and white filter\n" << //done
-         "- 2. Invert filter\n" <<          //done
-         "- 3. Merge\n" <<                  //done
-         "- 4. Flip\n" <<                   //done
-         "- 5. Change brightness\n" <<      //done
-         "- 6. Rotate\n" <<                 //done
-         "- 7. Detect edges\n" <<           //done
-         "- 8. Enlarge\n" <<                //done
-         "- 9. Shrink\n" <<                 //done
-         "- A. Mirror\n" <<                 //done
-         "- B. Add smart frame\n" <<        //done
-         "- C. Get average pixels contrast (advanced)\n" << //done
-         "- D. Shuffle\n" <<                //done
-         "- E. Blur\n" <<                   //done
-         "- F. Crop\n" <<                   //done
-         "- G. Skew\n" <<                   //lol
-         "- H. Credits\n" <<                //done
-         "- I. Save image to a file\n" <<   //done
-         "- 0. Exit :(\n"                   //obv done
+         "- 1. Black and white filter\n" <<
+         "- 3. Merge\n" <<
+         "- 4. Flip\n" <<
+         "- 5. Change brightness\n" <<
+         "- 6. Rotate\n" <<
+         "- 7. Detect edges\n" <<
+         "- 8. Enlarge\n" <<
+         "- 9. Shrink\n" <<
+         "- A. Mirror\n" <<
+         "- B. Add smart frame\n" <<
+         "- C. Get average pixels contrast (advanced)\n" <<
+         "- D. Shuffle\n" <<
+         "- E. Blur\n" <<
+         "- F. Crop\n" <<
+         "- G. Skew\n" <<
+         "- H. Credits\n" <<
+         "- I. Save image to a file\n" <<
+         "- 0. Exit :(\n"
          "->";
     std::vector<void (*)()> funPointers = {
             abort, blackAndWhite, invert, merge, flip, // abort() terminates with code 3.
