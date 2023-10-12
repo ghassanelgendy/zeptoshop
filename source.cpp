@@ -423,15 +423,79 @@ void detectEdges() {
 
 void addFrame() {
     //adds a frame to the image based on the average color
+    start:
+    int choice;
+    cout<<"Choose a frame\n 1. Square\n 2. Circle\n 3. Heart\n";
+    cin>>choice;
+    if (choice>3 || choice<0){
+        cout<<"Please choose a valid option\n";
+        goto start;
+    }
+
     unsigned short clr = 255;
     if (avg > 128) clr = 0;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if (i <= 5 || j <= 5 || i > 250 || j > 250) {
-                image[i][j] = clr;
-            }
-        }
+    double x, y, r , h ,k ,radius;
+    unsigned char blank[SIZE][SIZE];
+    for (auto &i: blank) {
+        for (unsigned char &j: i)
+            j = clr;
     }
+    switch (choice) {
+        case (1):
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    if (i <= 5 || j <= 5 || i > 250 || j > 250) {
+                        image[i][j] = clr;
+                    }
+                }
+            }
+            br
+        case (2):
+             h = SIZE / 2.0;
+             k = SIZE / 2.0; //to make the middle pixel co-ordinates
+             radius = SIZE / 2.2;
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+//                    x = i;
+//                    y = j;
+                    r = pow((i - h), 2) + pow((j - k), 2);
+                    if (r <= pow(radius, 2)) {
+                        blank[i][j] = image[i][j];
+                    }
+                }
+            }
+            burnEffect(blank);
+            break;
+        case (3):
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    //to make coordinates at the middle pixel
+                    x = (i - SIZE / 2.0) / (SIZE / 2.0);
+                    y = (j - SIZE / 2.0) / (SIZE / 2.0);
+
+                    // scaling factor
+                    x *= 1.4; // controls height , when increased it gets compressed
+                    y *= 1.3; // controls width , when increased the width gets compressed
+                    double temp = x;//to not overwrite values of the x
+                    x = -y; //rotate to make the heart upward
+                    y = -temp;
+
+                    //graphing equation
+                    r = pow((pow(x, 2) + pow(y, 2) - 1), 3) - pow(x, 2) * pow(y, 3);
+
+                    // checks if thr point is inside the range of the pixels we want to overwrite , if not it remainls the clr color
+                    if (r <= 0) {
+                        blank[i][j] = image[i][j];
+                    }
+                }
+            }
+            burnEffect(blank);
+            br
+
+    }
+
+
+
 }
 
 void enlarge() {
@@ -714,90 +778,65 @@ void skew() {
     char choice;
     cout << "(H) to skew Horizontally , (V) to skew Vertically\n";
     cin >> choice;
-    unsigned char skewed[512][512];
-    unsigned char compressedSkewed[SIZE][SIZE];
+    unsigned char skewed[256][256];
     for (auto &i: skewed) {
         for (unsigned char &j: i) {
             j = 255;
         }
     }
-
     int angle;
     cout << "enter degree to skew\n";
-    cin >> angle;
-    double Rangle = (angle * M_PI) / 180;
+    cin >> angle ;
+    double Rangle = (angle * M_PI) / 180; //converting angle to radian for cmath
+    double side = 256  * tan(Rangle); //side opposite to the angle
+    double scale = 256.0/(256.0-side); //scaling factor
+    double r = side/256; //ratio of skewed side to the whole edge to determine how many pixels to move
+    double pixel =0 , moved =0;
     if (choice == 'v' || choice == 'V') {
-        for (int i = 0; i < 256; ++i) {
-            for (int j = 0; j < 256; ++j) {
-                int newj = j + static_cast<int>(((255 - i) * tan(Rangle)));
-                skewed[i][newj] = image[i][j];
+        for (int i =  0; i < 256; ++i) {
+            pixel = 0;
+            for (int j = side-moved; j < 256-moved; ++j) { // to start iterating and copying pixels from the correct position in each row
+                int avg =0 ; //calculates average to compress the pixels
+                int curpixel=0;
+                for (int k = static_cast<int>(ceil(pixel-scale)); k <  static_cast<int>(ceil(pixel+scale)) ; k++) {
+                    //iterates over the pixels we want to add in each row with respect to scaling factor
+                    avg += image[i][k];
+                    curpixel++;
+                }
+                    avg /= max(1,curpixel);//to avoid divifing by zero
+                    skewed[i][j]=avg;
+                    pixel+= scale;//moves into the next group of pixels with respect to scaling factor
+                }
+             moved += r;//increased relative to r to give skewing effect
             }
         }
-
-        for (int i = 0; i < 256; ++i) {
-            for (int j = 0; j <= 256; ++j) {
-                compressedSkewed[i][j] = skewed[i][j * 2];
+    else if (choice== 'h'||choice=='H'){
+        for (int j =  0; j < 256; ++j) {
+            pixel = 0;
+            for (int i = side-moved; i < 256-moved; ++i) {
+                int avg =0 ;
+                int curpixel=0;
+                for (int k = static_cast<int>(ceil(pixel-scale)); k <  static_cast<int>(ceil(pixel+scale)) ; k++) {
+                    if (k >= 0 && k < 256) { // check boundaries
+                        avg += image[k][j];
+                        curpixel++;
+                    }
+                }
+                avg /= max(1,curpixel);
+                skewed[i][j]=avg;
+                pixel+= scale;
             }
-        }
-    } else if (choice == 'h' || choice == 'H') {
-        for (int i = 0; i < 256; ++i) {
-            for (int j = 0; j < 256; ++j) {
-                int newi = i + static_cast<int>(((255 - j) * tan(Rangle)));
-                skewed[newi][j] = image[i][j];
-            }
-        }
-
-        for (int i = 0; i < 256; ++i) {
-            for (int j = 0; j <= 256; ++j) {
-                compressedSkewed[i][j] = skewed[i * 2][j];
-            }
-        }
-    } else {
-        {
-            cout << "Please enter a valid input\n";
-            goto start;
+            moved += r;
         }
     }
-//    int skewamount = ceil(tan(Rangle )*256);
-//    int side , secside ;
-//    for (int i = 0; i < SIZE; ++i) {
-//        side = (SIZE-i) * tan(Rangle);
-//        secside=  skewamount-side;
-//        int fullside = side;
-//        for(int j=0; j<SIZE; j++)
-//        {
-//            if(side > 0) {
-//                skewed[i][j] = 255;
-//                --side;
-//            }
-//        }
-//        for(int j=SIZE-1; j>=0; j--)
-//        {
-//            if(secside > 0) {
-//                skewed[i][j] = 255;
-//                --secside;
-//            }
-//
-//            else {
-//                skewed[i][j] = image[i][j - fullside];
-//            }
-//        }
-//
-//    }
 
-//    for (int i = 0; i < SIZE; ++i) { // by3ml skew we ysyb el top left corner fady
-//        side = ceil((SIZE - i) * tan(Rangle));
-//        for (int j = side; j < SIZE-side; ++j) {
-//            skewed[i][j] = image[i][j - side];
-//        }
-//    }
-//    for (int i = 0; i < SIZE; ++i) {//by3ml skew we yshyl el bottom
-//        side = ceil(i * tan(Rangle));
-//        for (int j = 0; j < SIZE - side; ++j) {
-//            skewed[i][j] = image[i][j + side];
-//        }
-//    }
-    burnEffect(compressedSkewed);
+
+    else {
+        cout << "Please enter a valid input\n";
+            goto start;
+    }
+
+    burnEffect(skewed);
 
 }
 
