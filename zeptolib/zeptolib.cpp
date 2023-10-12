@@ -1106,6 +1106,7 @@ void skew() {
 void userChoice() {
     cout << "\t\t\t\t\t=== Please choose what you wanna do ===\n" <<
          "- 1. Black and white filter\n" <<
+         "- 2.invert\n"<<
          "- 3. Merge\n" <<
          "- 4. Flip\n" <<
          "- 5. Change brightness\n" <<
