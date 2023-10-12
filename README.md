@@ -5,20 +5,8 @@ Photoshop for People Who Don't Care About Features: The Who Needs 'Em Edition
 > zepto (definition) : combining form meaning “one sextillionth” (10-21).<br>
 > It's just photoshop, but on a zepto scale 🤏
 > 
-![GitHub repo size](https://img.shields.io/github/repo-size/ghassanelgendy/zeptoshop)
-
-## Program Name: Zeptoshop
-
-## Team Members
-- Ghassan Elgendy (20220239)
-  - E-Mail: [Ghassanelgendyy@gmail.com](mailto:Ghassanelgendyy@gmail.com)
-- Rowan Ammar (20220133)
-  - E-Mail: [rawanehab523@gmail.com](mailto:rawanehab523@gmail.com)
-- Jana Mohamed (20220470)
-  - E-Mail: [janamohamedramadan335@gmail.com](mailto:janamohamedramadan335@gmail.com)
-
 ## Purpose
-This repository contains an assignment for the FCAI OOP Programming course in 2023. The assignment focuses on creating a photo editing app that can apply various filters to both grayscale and RGB images. The project is designed to offer basic image manipulation functionalities and explore object-oriented programming concepts.
+This repository contains an assignment for the FCAI OOP Programming course in 2023. The assignment focuses on creating a photo editing app that can apply various filters to both grayscale and RGB images. The project is designed to offer basic image manipulation functionalities.
 
 ## Features
 - Load and manipulate grayscale and RGB images.
