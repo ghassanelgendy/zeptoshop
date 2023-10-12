@@ -1,12 +1,17 @@
-//Image Processor Project by:
+//FCAI – OOP Programming – 2023 - Assignment #1 - Part 2
+//Program Name: CS213-2023-2022047-20220133-20220239-A1-Part2.cpp
+// Last Modification Date: 12/10/2023
 //Ghassan Elgendy 20220239     E-Mail: Ghassanelgendyy@gmail.com
 //Rowan Ammar     20220133     E-Mail: rawanehab523@gmail.com
 //Jana Mohamed    20220470     E-Mail: janamohamedramadan335@gmail.com
+//Purpose :photo editing app to apply different filters to grey scale image
 //3/10/2023//
 #include <iostream>
 #include <cstring>
 #include "bmplib.cpp"
+#include <cmath>
 
+#define br break;
 using namespace std;
 
 //declaring the matrix
@@ -81,13 +86,20 @@ void enlarge();
 //shrink image by a desired scale
 void shrink();
 
+//mirrors chosen half of the image
 void mirror();
 
+//shuffles quarters of the image
 void shuffle();
 
+//blurs the image
 void blur();
 
+//crops the image from desired point with desired dimensions
 void crop();
+
+//skews the image horizontally or vertically
+void skew();
 
 int main() {
     isIssue = false;
@@ -142,11 +154,13 @@ int continuePrompt() {
          "(S) to save, (D) to do something else\n";
     char c;
     cin >> c;
+    //asks if the user wants to save the image or apply another filter
     if (c == 'd' || c == 'D')
         userChoice();
     else if (c == 's' || c == 'S') {
         saveImage();
         cout << "Do you have another image to process? Y/N\n";
+        //reruns the program in case the user has another image to process
         unsigned char loop;
         cin >> loop;
         if (loop == 'y' || loop == 'Y') {
@@ -189,6 +203,7 @@ int userChoice() {
          "- D. Shuffle\n" <<
          "- E. Blur\n" <<
          "- F. Crop\n" <<
+         "- G. Skew\n" <<
          "- S. Save image to a file\n" <<
          "- 0. Exit :(\n";
     cin >> choice;
@@ -242,11 +257,11 @@ int userChoice() {
         case ('s'):
             saveImage();
             break;
-        case('f'):
+        case ('f'):
             crop();
             break;
         case ('g'):
-            shuffle();
+            skew();
             break;
         case ('0'):
             cout << "Bye.\n";
@@ -273,6 +288,7 @@ void invert() {
 void blackAndWhite(int &average) {
     for (auto &i: image) {
         for (unsigned char &j: i) {
+            //checks if the value is above average , it turns white if not it turns black
             (j > average) ? j = 255 : j = 0;
         }
     }
@@ -284,12 +300,14 @@ void merge() {
     loadImage(secImage);
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
+            //adds the value of each pixel of the two images then displays their average
             image[i][j] = (image[i][j] + secImage[i][j]) / 2;
         }
     }
 }
 
 void flip() {
+    start:
     cout << "(V) to flip vertically, (H) to flip horizontally\n";
     unsigned char flipped[SIZE][SIZE];
     char x;
@@ -297,20 +315,27 @@ void flip() {
     if (x == 'v' || x == 'V') {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
+                //replaces the top most  row with the bottom row and so on to flip the image  vertically
                 flipped[i][j] = image[SIZE - 1 - i][j];
             }
         }
-    } else {
+    } else if (x == 'h' || x == 'H') {
+        //replaces the left column with the column on the right and so on to flip the image horizontally
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 flipped[i][j] = image[i][SIZE - 1 - j];
             }
         }
+    } else {
+        cout << "please enter a valid input.\n";
+        goto start;
     }
+    //copies flipped to the variable image
     burnEffect(flipped);
 }
 
 void burnEffect(unsigned char newImg[SIZE][SIZE]) {
+    //function to copy any image to the variable image as the save function only reads it
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j)
             image[i][j] = newImg[i][j];
@@ -321,6 +346,7 @@ void rotate(short time) {
     for (int k = 0; k < time; ++k) {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
+                //replacing each i row with a j column to rotate the image
                 rotated[i][j] = image[j][SIZE - 1 - i];
             }
         }
@@ -329,7 +355,7 @@ void rotate(short time) {
 }
 
 void rotationPrompt() {
-    cout << "Enter degrees of rotation: \n" <<
+    cout << "Enter degree of rotation: \n" <<
          "90, 180, 270, 360\n";
     int x;
     cin >> x;
@@ -344,7 +370,8 @@ void rotationPrompt() {
             rotate(3);
             break;
         default:
-            cout << "?";
+            cout << "?\n";
+            rotationPrompt();
     }
 }
 
@@ -355,6 +382,7 @@ void controlBrightness(unsigned char c) {
 void darken() {
     for (auto &i: image) {
         for (unsigned char &j: i) {
+            //divide each pixel by 2 to make it darker
             j /= 2;
         }
     }
@@ -363,6 +391,7 @@ void darken() {
 void brighten() {
     for (auto &i: image) {
         for (unsigned char &j: i) {
+            //adds an overlay of pure white then gets the average to make it brighter
             j = (j + 255) / 2;
         }
     }
@@ -371,6 +400,8 @@ void brighten() {
 void detectEdges() {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
+            //checks each pixel with the pixels beside it , if the result is above average
+            //then the difference is too big and this is an edge
             if (image[i][j] >= avg) {
                 if (image[i + 1][j] < avg
                     || image[i][j + 1] < avg) {
@@ -391,23 +422,94 @@ void detectEdges() {
 }
 
 void addFrame() {
+    //adds a frame to the image based on the average color
+    start:
+    int choice;
+    cout<<"Choose a frame\n 1. Square\n 2. Circle\n 3. Heart\n";
+    cin>>choice;
+    if (choice>3 || choice<0){
+        cout<<"Please choose a valid option\n";
+        goto start;
+    }
+
     unsigned short clr = 255;
     if (avg > 128) clr = 0;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if (i <= 5 || j <= 5 || i > 250 || j > 250) {
-                image[i][j] = clr;
-            }
-        }
+    double x, y, r , h ,k ,radius;
+    unsigned char blank[SIZE][SIZE];
+    for (auto &i: blank) {
+        for (unsigned char &j: i)
+            j = clr;
     }
+    switch (choice) {
+        case (1):
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    if (i <= 5 || j <= 5 || i > 250 || j > 250) {
+                        image[i][j] = clr;
+                    }
+                }
+            }
+            br
+        case (2):
+             h = SIZE / 2.0;
+             k = SIZE / 2.0; //to make the middle pixel co-ordinates
+             radius = SIZE / 2.2;
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+//                    x = i;
+//                    y = j;
+                    r = pow((i - h), 2) + pow((j - k), 2);
+                    if (r <= pow(radius, 2)) {
+                        blank[i][j] = image[i][j];
+                    }
+                }
+            }
+            burnEffect(blank);
+            break;
+        case (3):
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    //to make coordinates at the middle pixel
+                    x = (i - SIZE / 2.0) / (SIZE / 2.0);
+                    y = (j - SIZE / 2.0) / (SIZE / 2.0);
+
+                    // scaling factor
+                    x *= 1.4; // controls height , when increased it gets compressed
+                    y *= 1.3; // controls width , when increased the width gets compressed
+                    double temp = x;//to not overwrite values of the x
+                    x = -y; //rotate to make the heart upward
+                    y = -temp;
+
+                    //graphing equation
+                    r = pow((pow(x, 2) + pow(y, 2) - 1), 3) - pow(x, 2) * pow(y, 3);
+
+                    // checks if thr point is inside the range of the pixels we want to overwrite , if not it remainls the clr color
+                    if (r <= 0) {
+                        blank[i][j] = image[i][j];
+                    }
+                }
+            }
+            burnEffect(blank);
+            br
+
+    }
+
+
+
 }
 
 void enlarge() {
-    unsigned short x;
+    start :
+    unsigned short x = 0;
     unsigned char enlarged[SIZE][SIZE];
-
     cout << "Which quarter do you want to enlarge?\n";
     cin >> x;
+    if (x < 0 || x > 4) {
+        cout << "choose a quarter from 1-4 please\n";
+        goto start;
+    }
+    //iterates over each quarter of the image then puts it in another variable(enlarged)
+    //then repeats every pixel twice to make the quarter fill out the whole image
     switch (x) {
         //first quad
         case (1):
@@ -460,6 +562,7 @@ void enlarge() {
         default:
             break;
     }
+    //to copy enlarged into image
     burnEffect(enlarged);
 }
 
@@ -474,6 +577,7 @@ void shrink() {
         cout << "Please i'm not a magician, choose a valid number.\n";
         shrink();
     } else {
+        //the iteration skips over a certain number of pixels based on the user input
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 shrunk[i][j] = 255;
@@ -485,11 +589,17 @@ void shrink() {
 }
 
 void mirror() {
+    start:
     cout << "1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
     unsigned short option;
     cin >> option;
+    if (option > 3) {
+        cout << "How??\n";
+        goto start;
+    }
     switch (option) {
         case (1):
+            //replaces columns of the right half with the columns of left half inverted
             for (int i = 0; i < SIZE; ++i) {
                 for (int j = 0; j < SIZE / 2; ++j) {
                     image[i][j + 128] = image[i][127 - j];
@@ -497,6 +607,7 @@ void mirror() {
             }
             break;
         case (2):
+            //replaces columns of the left half with the columns of the right half inverted
             for (int i = 0; i < SIZE; ++i) {
                 for (int j = 0; j < SIZE / 2; ++j) {
                     image[i][127 - j] = image[i][j + 128];
@@ -504,6 +615,7 @@ void mirror() {
             }
             break;
         case (3):
+
             for (int i = 0; i < SIZE / 2; ++i) {
                 for (int j = 0; j < SIZE; ++j) {
                     image[i + 128][j] = image[127 - i][j];
@@ -511,6 +623,7 @@ void mirror() {
             }
             break;
         case (4):
+            //replaces rows of the upper half with the rows of the lower half inverted
             for (int i = 0; i < SIZE / 2; ++i) {
                 for (int j = 0; j < SIZE; ++j) {
                     image[127 - i][j] = image[i + 128][j];
@@ -518,87 +631,220 @@ void mirror() {
             }
             break;
         default:
-            cout << "How??\n";
+
             break;
     }
 }
 
 void shuffle() {
-    //if(i < 128 && j > 128){ //second quad
-    // if(i < 128 && j < 128){ //first quad
-    // if(i > 128 && j < 128){ //third quad
-    // if(i > 128 && j > 128){ //fourth quad
+    start:
     unsigned char shuffled[SIZE][SIZE];
-    int order[4]; //array bya5od trtyb el quads men el user
-    int quarter;
+    int quarter = 1;
     cout << "what order of quarters? \n";
-    for (int &i: order)
+    int order[4];
+    for (int &i: order) {
         cin >> i;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if (i < 128 && j < 128) {
-                quarter = order[0];
-            } else if (i < 128 && j > 128) {
-                quarter = order[1];
-            } else if (i > 128 && j < 128) {
-                quarter = order[2];
-            } else if (i > 128 && j > 128) {
-                quarter = order[3];
-            }
-                switch (quarter) {
-                    case (1):
-                        shuffled[i][j] = image[i][j];
-                        break;
-                    case (2):
-                        shuffled[i][j] = image[i][j + 128];
-                        break;
-                    case (3):
-                        shuffled[i][j] = image[i + 128][j];
-                        break;
-                    case (4):
-                        shuffled[i][j] = image[i + 128][j + 128];
-                        break;
-                    default:
-                        break;
-                }
-            }
+        if (i < 0 || i > 4) {
+            cout << "Please enter a valid order\n";
+            goto start;
+        }
     }
+    for (int i: order) {
+        //checks over the input order of the user then iterates over each quarter by order
+        // replacing the quarter with the corresponding quarter of the user input
+        switch (quarter) {
+            case (1):
+                for (int j = 0; j < 128; ++j) {
+                    for (int k = 0; k < 128; ++k) {
+                        switch (i) {
+                            //switch to specify which quarter of the original image will copy to the quarter we are iterating over
+                            case (1):
+                                shuffled[j][k] = image[j][k];
+                                br
+                            case (2):
+                                shuffled[j][k] = image[j][k + 128];
+
+                                br
+                            case (3):
+                                shuffled[j][k] = image[j + 128][k];
+                                br
+                            case (4):
+                                shuffled[j][k] = image[j + 128][k + 128];
+                        }
+                    }
+                }
+                br
+            case (2):
+                for (int j = 0; j < 128; ++j) {
+                    for (int k = 128; k < SIZE; ++k) {
+                        switch (i) {
+                            case (1):
+                                shuffled[j][k] = image[j][k - 128];
+                                br
+                            case (2):
+                                shuffled[j][k] = image[j][k];
+                                br
+                            case (3):
+                                shuffled[j][k] = image[j + 128][k - 128];
+                                br
+                            case (4):
+                                shuffled[j][k] = image[j + 128][k];
+                        }
+                    }
+                }
+
+                br
+            case (3):
+                for (int j = 128; j < SIZE; ++j) {
+                    for (int k = 0; k < 128; ++k) {
+                        switch (i) {
+                            case (1):
+                                shuffled[j][k] = image[j - 128][k];
+                                br
+                            case (2):
+                                shuffled[j][k] = image[j - 128][k + 128];
+                                br
+                            case (3):
+                                shuffled[j][k] = image[j][k];
+                                br
+                            case (4):
+                                shuffled[j][k] = image[j][k + 128];
+
+                        }
+                    }
+                }
+
+                br
+            case (4):
+                for (int j = 128; j < SIZE; ++j) {
+                    for (int k = 128; k < SIZE; ++k) {
+                        switch (i) {
+                            case (1):
+                                shuffled[j][k] = image[j - 128][k - 128];
+                                br
+                            case (2):
+                                shuffled[j][k] = image[j - 128][k];
+                                br
+                            case (3):
+                                shuffled[j][k] = image[j][k - 128];
+                                br
+                            case (4):
+                                shuffled[j][k] = image[j][k];
+
+                        }
+                    }
+                }
+                br
+            default:
+                br
+        }
+        quarter++;
+    }
+    //copies shuffled to image
     burnEffect(shuffled);
 }
-void blur(){
-    unsigned char blurred[SIZE][SIZE];
-    int sum =0;
-    for (int i = 0; i <SIZE ; ++i) {
-        for (int j = 0; j <SIZE ; ++j) {
-//            for (int k = -5; k <6 ; ++k) {
-//                for (int l = -5; l <6 ; ++l) {
-//                    sum += image[i + k][j + l];
-//                }
-//            }
-//            blurred[i][j] = sum / 25;
-            blurred[i][j] = (image[i][j]+
-                             image[i+1][j]+image[i][j+1]+image[i-1][j]+image[i][j-1]+
-                             image[i+2][j]+image[i][j+2]+image[i-2][j]+image[i][j-2]+
-                             image[i+3][j]+image[i][j+3]+image[i-3][j]+image[i][j-3]+
-                             image[i+4][j]+image[i][j+4]+image[i-4][j]+
-                             image[i+5][j]+image[i][j+5]+image[i-5][j])/25;
 
+void blur() {
+    unsigned char blurred[SIZE][SIZE];
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            int sum = 0;
+            //sums the middle pixel with every 5 pixels around it from each direction and gets their average to achieve a hazy scale
+            for (int k = -5; k <= 5; ++k) {
+                sum += image[i + k][j] + image[i][j + k];
+            }
+            blurred[i][j] = sum / 25;
         }
     }
+    //copies blurred to image
     burnEffect(blurred);
 }
-void crop(){
-    int x,y,l,w;
-    cout<<"enter x y l w\n";
-    cin>>x>>y>>l>>w;
 
-    for (int i = 0; i < SIZE ; ++i) {
-        for (int j = 0; j <SIZE ; ++j) {
-            if((i< y || i> (y+l)) || (j < x || j > (w+x)))
-                image[i][j]=255;
+void crop() {
+    int x, y, l, w;
+    cout << "enter x y l w\n";
+    cin >> x >> y >> l >> w;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            if ((i < y || i > (y + l)) || (j < x || j > (w + x)))
+                //makes any pixels before the starting point and after the end point white  hence achieving a crop effect
+                image[i][j] = 255;
         }
-
-
     }
 }
+
+void skew() {
+    start :
+    char choice;
+    cout << "(H) to skew Horizontally , (V) to skew Vertically\n";
+    cin >> choice;
+    unsigned char skewed[256][256];
+    for (auto &i: skewed) {
+        for (unsigned char &j: i) {
+            j = 255;
+        }
+    }
+    int angle;
+    cout << "enter degree to skew\n";
+    cin >> angle ;
+    double Rangle = (angle * M_PI) / 180; //converting angle to radian for cmath
+    double side = 256  * tan(Rangle); //side opposite to the angle
+    double scale = 256.0/(256.0-side); //scaling factor
+    double r = side/256; //ratio of skewed side to the whole edge to determine how many pixels to move
+    double pixel =0 , moved =0;
+    if (choice == 'v' || choice == 'V') {
+        for (int i =  0; i < 256; ++i) {
+            pixel = 0;
+            for (int j = side-moved; j < 256-moved; ++j) { // to start iterating and copying pixels from the correct position in each row
+                int avg =0 ; //calculates average to compress the pixels
+                int curpixel=0;
+                for (int k = static_cast<int>(ceil(pixel-scale)); k <  static_cast<int>(ceil(pixel+scale)) ; k++) {
+                    //iterates over the pixels we want to add in each row with respect to scaling factor
+                    avg += image[i][k];
+                    curpixel++;
+                }
+                    avg /= max(1,curpixel);//to avoid divifing by zero
+                    skewed[i][j]=avg;
+                    pixel+= scale;//moves into the next group of pixels with respect to scaling factor
+                }
+             moved += r;//increased relative to r to give skewing effect
+            }
+        }
+    else if (choice== 'h'||choice=='H'){
+        for (int j =  0; j < 256; ++j) {
+            pixel = 0;
+            for (int i = side-moved; i < 256-moved; ++i) {
+                int avg =0 ;
+                int curpixel=0;
+                for (int k = static_cast<int>(ceil(pixel-scale)); k <  static_cast<int>(ceil(pixel+scale)) ; k++) {
+                    if (k >= 0 && k < 256) { // check boundaries
+                        avg += image[k][j];
+                        curpixel++;
+                    }
+                }
+                avg /= max(1,curpixel);
+                skewed[i][j]=avg;
+                pixel+= scale;
+            }
+            moved += r;
+        }
+    }
+
+
+    else {
+        cout << "Please enter a valid input\n";
+            goto start;
+    }
+
+    burnEffect(skewed);
+
+}
+
+
+
+
+
+
+
+
 
