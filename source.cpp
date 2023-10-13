@@ -37,6 +37,7 @@ unsigned int avg = 127;
 //declaring filesize
 unsigned int imageSize = 0;
 
+// checks if the file is RGB by checking the file size
 void detectColorMode(const string &filename) {
     FILE *p_file;
     p_file = fopen(filename.c_str(), "rb");
@@ -102,6 +103,7 @@ void blackAndWhite() {
         for (auto &i: image) {
             for (usc &j: i) {
                 (j > avg) ? j = 255 : j = 0;
+                //checks if the value is above average , it turns white if not it turns black
             }
         }
     }
@@ -143,6 +145,7 @@ void merge() {
     } else {
         for (usn i = 0; i < SIZE; ++i) {
             for (usn j = 0; j < SIZE; ++j) {
+                //adds the value of each pixel of the two images then displays their average
                 image[i][j] = (image[i][j] + secImage[i][j]) / 2;
             }
         }
@@ -176,12 +179,14 @@ void flip() {
         if (x == 'v' || x == 'V') {
             for (usn i = 0; i < SIZE; ++i) {
                 for (usn j = 0; j < SIZE; ++j) {
+                    //replaces the top most  row with the bottom row and so on to flip the image  vertically
                     flipped[i][j] = image[SIZE - 1 - i][j];
                 }
             }
         } else {
             for (usn i = 0; i < SIZE; ++i) {
                 for (usn j = 0; j < SIZE; ++j) {
+                    //replaces the left column with the column on the right and so on to flip the image horizontally
                     flipped[i][j] = image[i][SIZE - 1 - j];
                 }
             }
@@ -204,6 +209,7 @@ void brighten() {
     } else {
         for (auto &i: image) {
             for (usc &j: i) {
+                //adds an overlay of pure white then gets the average to make it brighter
                 j = (j + 255) / 2;
             }
         }
@@ -225,6 +231,7 @@ void darken() {
     } else {
         for (auto &i: image) {
             for (usc &j: i) {
+                //divide each pixel by 2 to make it darker
                 j /= 2;
             }
         }
@@ -285,6 +292,7 @@ void rotate(short time) {
         } else {
             for (usn i = 0; i < SIZE; ++i) {
                 for (usn j = 0; j < SIZE; ++j) {
+                    //replacing each i row with a j column to rotate the image
                     rotated[i][j] = image[j][SIZE - 1 - i];
                 }
                 burnEffect(rotated, rotatedRGB);
@@ -338,6 +346,8 @@ void detectEdges() {
     isRGB = false;
     for (usn i = 0; i < SIZE; i++) {
         for (usn j = 0; j < SIZE; j++) {
+            //checks each pixel with the pixels beside it , if the result is above average
+            //then the difference is too big and this is an edge
             if (image[i][j] >= avg) {
                 if (image[i + 1][j] < avg
                     || image[i][j + 1] < avg) {
@@ -359,6 +369,7 @@ void detectEdges() {
 
 //optional filter
 void addFrame() {
+    //adds a frame to the image based on the average color
     unsigned short clr = 255;
     if (isRGB) {
         if (avg > 128) clr = 0;
@@ -455,6 +466,8 @@ void enlarge() {
                 br
         }
     } else {
+        //iterates over each quarter of the image then puts it in another variable(enlarged)
+        //then repeats every pixel twice to make the quarter fill out the whole image
         switch (x) {
             // first quad
             case (1):
@@ -508,6 +521,7 @@ void enlarge() {
                 br
         }
     }
+    //to copy enlarged into image
     burnEffect(enlarged, enlargedRGB);
 
 }
@@ -537,6 +551,7 @@ void shrink() {
                 }
             }
         } else {
+            //the iteration skips over a certain number of pixels based on the user input
             for (usn i = 0; i < SIZE; ++i) {
                 for (usn j = 0; j < SIZE; ++j) {
                     shrunk[i][j] = 255;
@@ -549,7 +564,7 @@ void shrink() {
     }
 }
 
-//mirrors chosen half of the imagw
+//mirrors chosen half of the image
 void mirror() {
     startMirrorLabel:
     cout << "1. Left half\n2. Right half\n3. Upper half\n4. Lower half\n";
@@ -601,6 +616,7 @@ void mirror() {
     } else {
         switch (option) {
             case (1):
+                //replaces columns of the right half with the columns of left half inverted
                 for (auto &i: image) {
                     for (usn j = 0; j < SIZE / 2; ++j) {
                         i[j + 128] = i[127 - j];
@@ -608,6 +624,7 @@ void mirror() {
                 }
                 br
             case (2):
+                //replaces columns of the left half with the columns of the right half inverted
                 for (auto &i: image) {
                     for (usn j = 0; j < SIZE / 2; ++j) {
                         i[127 - j] = i[j + 128];
@@ -615,6 +632,7 @@ void mirror() {
                 }
                 br
             case (3):
+                // replaces rows of the lower half with the rows of the upper half inverted
                 for (usn i = 0; i < SIZE / 2; ++i) {
                     for (usn j = 0; j < SIZE; ++j) {
                         image[i + 128][j] = image[127 - i][j];
@@ -622,6 +640,7 @@ void mirror() {
                 }
                 br
             case (4):
+                //replaces rows of the upper half with the rows of the lower half inverted
                 for (usn i = 0; i < SIZE / 2; ++i) {
                     for (usn j = 0; j < SIZE; ++j) {
                         image[127 - i][j] = image[i + 128][j];
@@ -756,11 +775,14 @@ void shuffle() {
         }
     } else {
         for (usn i: order) {
+            //checks over the input order of the user then iterates over each quarter by order
+            // replacing the quarter with the corresponding quarter of the user input
             switch (quarter) {
                 case (1):
                     for (usn j = 0; j < 128; ++j) {
                         for (usn k = 0; k < 128; ++k) {
                             switch (i) {
+                                //switch to specify which quarter of the original image will copy to the quarter we are iterating over
                                 case (1):
                                     shuffled[j][k] = image[j][k];
                                     br
@@ -870,28 +892,25 @@ void blur() {
         for (usn i = 0; i < SIZE; ++i) {
             for (usn j = 0; j < SIZE; ++j) {
                 for (usn k = 0; k < RGB; ++k) {
-                    blurredRGB[i][j][k] = (RGBImage[i][j][k] +
-                                           RGBImage[i + 1][j][k] + RGBImage[i][j + 1][k] + RGBImage[i - 1][j][k] +
-                                           RGBImage[i][j - 1][k] +
-                                           RGBImage[i + 2][j][k] + RGBImage[i][j + 2][k] + RGBImage[i - 2][j][k] +
-                                           RGBImage[i][j - 2][k] +
-                                           RGBImage[i + 3][j][k] + RGBImage[i][j + 3][k] + RGBImage[i - 3][j][k] +
-                                           RGBImage[i][j - 3][k] +
-                                           RGBImage[i + 4][j][k] + RGBImage[i][j + 4][k] + RGBImage[i - 4][j][k] +
-                                           RGBImage[i + 5][j][k] + RGBImage[i][j + 5][k] + RGBImage[i - 5][j][k]) / 25;
+                    int sum = 0;
+                    for (int l=-5;l<5;++l){
+                        sum += RGBImage[i+l][j][k]+RGBImage[i][j+l][k];
+                        blurredRGB[i][j][k] = sum/25;
+                    }
+
                 }
             }
         }
     } else {
+
         for (usn i = 0; i < SIZE; ++i) {
             for (usn j = 0; j < SIZE; ++j) {
-                blurred[i][j] = (image[i][j] +
-                                 image[i + 1][j] + image[i][j + 1] + image[i - 1][j] + image[i][j - 1] +
-                                 image[i + 2][j] + image[i][j + 2] + image[i - 2][j] + image[i][j - 2] +
-                                 image[i + 3][j] + image[i][j + 3] + image[i - 3][j] + image[i][j - 3] +
-                                 image[i + 4][j] + image[i][j + 4] + image[i - 4][j] +
-                                 image[i + 5][j] + image[i][j + 5] + image[i - 5][j]) / 25;
-
+                int sum = 0;
+                //sums the middle pixel with every 5 pixels around it from each direction and gets their average to achieve a hazy scaleint sum = 0;
+                for(int l=-5;l<=5;++l){
+                    sum += image[i+l][j]+image[i][j+l];
+                    blurred[i][j] = sum/25;
+                }
             }
         }
     }
@@ -917,6 +936,7 @@ void crop() {
         for (usn i = 0; i < SIZE; ++i) {
             for (usn j = 0; j < SIZE; ++j) {
                 if ((i < y || i > (y + l)) || (j < x || j > (w + x)))
+                    //makes any pixels before the starting point and after the end point white  hence achieving a crop effect
                     image[i][j] = 255;
             }
         }
@@ -1008,7 +1028,7 @@ void skew() {
                     int curpixel = 0;
                     for (int k = static_cast<int>(ceil(pixel - scale)); k < static_cast<int>(ceil(pixel + scale)); k++) {
                         for (int c = 0; c < RGB; ++c) {
-                            if (k >= 0 && k < 256) { // check boundaries
+                            if (k >= 0 && k < 256) {
                                 avg[c] += RGBImage[i][k][c];
                             }
                         }
@@ -1030,7 +1050,7 @@ void skew() {
                     int curpixel = 0;
                     for (int k = static_cast<int>(ceil(pixel - scale)); k < static_cast<int>(ceil(pixel + scale)); k++) {
                         for (int c = 0; c < RGB; ++c) {
-                            if (k >= 0 && k < 256) { // check boundaries
+                            if (k >= 0 && k < 256) {
                                 avg[c] += RGBImage[k][j][c];
                             }
                         }
@@ -1083,7 +1103,7 @@ void skew() {
                     int curpixel = 0;
                     for (int k = static_cast<int>(ceil(pixel - scale));
                          k < static_cast<int>(ceil(pixel + scale)); k++) {
-                        if (k >= 0 && k < 256) { // check boundaries
+                        if (k >= 0 && k < 256) {
                             avg += image[k][j];
                             curpixel++;
                         }
