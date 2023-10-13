@@ -21,7 +21,7 @@ This repository contains an assignment for the FCAI OOP Programming course in 20
 ## Filters
 1. **Black and White Filter:** Converts the image to grayscale.
 2. **Invert:** Creates a negative of the image.
-3. **Merge (Functionality in Progress):** Allows you to merge two images (functionality to be added).
+3. **Merge:** Allows you to merge two images.
 4. **Flip:** Flip the image horizontally or vertically.
 5. **Change Brightness:** Adjust the brightness of the image.
 6. **Rotate:** Rotate the image.
