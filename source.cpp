@@ -1138,23 +1138,23 @@ void skew() {
 //start point of the project
 void userChoice() {
     cout << "\t\t\t\t\t=== Please choose what you wanna do ===\n" <<
-         "- 1. Black and white filter\n" <<
-         "- 2.invert\n"<<
-         "- 3. Merge\n" <<
-         "- 4. Flip\n" <<
-         "- 5. Change brightness\n" <<
-         "- 6. Rotate\n" <<
-         "- 7. Detect edges\n" <<
-         "- 8. Enlarge\n" <<
-         "- 9. Shrink\n" <<
-         "- A. Mirror\n" <<
+         "- 1. Black and white filter\t\t\t\t" <<
+         "- A. Mirror\n"<<
+         "- 2. invert\t\t\t\t\t\t\t\t" <<
          "- B. Add smart frame\n" <<
+         "- 3. Merge\t\t\t\t\t\t\t\t" <<
          "- C. Get average pixels contrast (advanced)\n" <<
+         "- 4. Flip- \t\t\t\t\t\t\t\t" <<
          "- D. Shuffle\n" <<
+         "- 5. Change brightness\t\t\t\t\t" <<
          "- E. Blur\n" <<
+         "- 6. Rotate\t\t\t\t\t\t\t\t" <<
          "- F. Crop\n" <<
+         "- 7. Detect edges\t\t\t\t\t\t" <<
          "- G. Skew\n" <<
+         "- 8. Enlarge\t\t\t\t\t\t\t" <<
          "- H. Credits\n" <<
+         "- 9. Shrink\t\t\t\t\t\t\t\t" <<
          "- I. Save image to a file\n" <<
          "- 0. Exit :(\n"
          "->";
