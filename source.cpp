@@ -296,7 +296,6 @@ void rotate(short time) {
                         }
                     }
                 }
-                burnEffect(rotated, rotatedRGB);
             }
         } else {
             for (usn i = 0; i < SIZE; ++i) {
@@ -304,9 +303,10 @@ void rotate(short time) {
                     //replacing each i row with a j column to rotate the image
                     rotated[i][j] = image[j][SIZE - 1 - i];
                 }
-                burnEffect(rotated, rotatedRGB);
             }
         }
+        burnEffect(rotated, rotatedRGB);
+
     }
 }
 
@@ -910,12 +910,10 @@ void blur() {
                         sum += RGBImage[i+l][j][k]+RGBImage[i][j+l][k];
                         blurredRGB[i][j][k] = sum/25;
                     }
-
                 }
             }
         }
     } else {
-
         for (usn i = 0; i < SIZE; ++i) {
             for (usn j = 0; j < SIZE; ++j) {
                 int sum = 0;
@@ -927,7 +925,6 @@ void blur() {
             }
         }
     }
-
     burnEffect(blurred, blurredRGB);
 }
 
@@ -1138,7 +1135,7 @@ void skew() {
 //start point of the project
 void userChoice() {
     cout << "\t\t\t\t\t=== Please choose what you wanna do ===\n" <<
-         "- 1. Black and white filter\t\t\t\t" <<
+         "- 1. Black and white filter\t\t\t\t\t\t" <<
          "- A. Mirror\n"<<
          "- 2. invert\t\t\t\t\t\t\t\t" <<
          "- B. Add smart frame\n" <<
@@ -1146,13 +1143,13 @@ void userChoice() {
          "- C. Get average pixels contrast (advanced)\n" <<
          "- 4. Flip- \t\t\t\t\t\t\t\t" <<
          "- D. Shuffle\n" <<
-         "- 5. Change brightness\t\t\t\t\t" <<
+         "- 5. Change brightness\t\t\t\t\t\t\t" <<
          "- E. Blur\n" <<
          "- 6. Rotate\t\t\t\t\t\t\t\t" <<
          "- F. Crop\n" <<
-         "- 7. Detect edges\t\t\t\t\t\t" <<
+         "- 7. Detect edges\t\t\t\t\t\t\t" <<
          "- G. Skew\n" <<
-         "- 8. Enlarge\t\t\t\t\t\t\t" <<
+         "- 8. Enlarge\t\t\t\t\t\t\t\t" <<
          "- H. Credits\n" <<
          "- 9. Shrink\t\t\t\t\t\t\t\t" <<
          "- I. Save image to a file\n" <<
